@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Profile - College Admission System{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+  <div class="d-flex justify-content-between align-items-center">
+    <div>
+      <h3 class="fw-bold mb-1" style="color: #0B3A6E;">My Student Profile</h3>
+      <p class="text-secondary mb-0">View and update your personal, guardian and academic details</p>
+    </div>
+    <span class="badge bg-light text-primary border px-3 py-2 fs-6">ID: {{ profile.student_id }}</span>
+  </div>
+</div>
+
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+
+  <div class="row g-4">
+    <!-- Left Column: Personal & Guardian Details -->
+    <div class="col-lg-7">
+      
+      <!-- Personal Details -->
+      <div class="card-custom mb-4">
+        <div class="card-custom-header">
+          <h5 class="card-title-custom"><i class="bi bi-person me-2"></i> Personal Details</h5>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label class="form-label-custom">First Name</label>
+            {{ user_form.first_name }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label-custom">Last Name</label>
+            {{ user_form.last_name }}
+          </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label class="form-label-custom">Email Address</label>
+            <input type="text" class="form-control-custom bg-light" value="{{ user.email }}" disabled>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label-custom">Phone Number</label>
+            {{ user_form.phone_number }}
+          </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label class="form-label-custom">Date of Birth</label>
+            {{ profile_form.date_of_birth }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label-custom">Gender</label>
+            {{ profile_form.gender }}
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label-custom">Address</label>
+          {{ profile_form.address }}
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label-custom">City</label>
+            {{ profile_form.city }}
+          </div>
+          <div class="col-md-4">
+            <label class="form-label-custom">State</label>
+            {{ profile_form.state }}
+          </div>
+          <div class="col-md-4">
+            <label class="form-label-custom">Pincode</label>
+            {{ profile_form.pincode }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Parent / Guardian Details -->
+      <div class="card-custom">
+        <div class="card-custom-header">
+          <h5 class="card-title-custom"><i class="bi bi-people me-2"></i> Parent / Guardian Details</h5>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label class="form-label-custom">Father's Name</label>
+            {{ profile_form.father_name }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label-custom">Mother's Name</label>
+            {{ profile_form.mother_name }}
+          </div>
+        </div>
+
+        <div class="mb-2">
+          <label class="form-label-custom">Guardian Contact Number</label>
+          {{ profile_form.guardian_contact }}
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right Column: Academic Details & Profile Picture -->
+    <div class="col-lg-5">
+      
+      <!-- Profile Picture Card -->
+      <div class="card-custom mb-4 text-center">
+        <div class="card-custom-header text-start">
+          <h5 class="card-title-custom"><i class="bi bi-camera me-2"></i> Profile Photo</h5>
+        </div>
+
+        <div class="my-3">
+          <div class="header-avatar mx-auto mb-3" style="width: 100px; height: 100px; font-size: 2.5rem;">
+            {% if user.profile_picture %}
+              <img src="{{ user.profile_picture.url }}" alt="{{ user.full_name }}" class="w-100 h-100 rounded-circle">
+            {% else %}
+              {{ user.first_name|first|default:user.username|first|upper }}
+            {% endif %}
+          </div>
+          <div class="px-3">
+            {{ user_form.profile_picture }}
+            <small class="text-muted d-block mt-2">Allowed JPG, PNG max 2MB</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Academic Background -->
+      <div class="card-custom mb-4">
+        <div class="card-custom-header">
+          <h5 class="card-title-custom"><i class="bi bi-mortarboard me-2"></i> Academic Records</h5>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label-custom">Previous Institution</label>
+          {{ profile_form.previous_institution }}
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label-custom">Qualifying Examination</label>
+          {{ profile_form.qualification }}
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label-custom">Board / University</label>
+          {{ profile_form.board_university }}
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label-custom">Passing Year</label>
+            {{ profile_form.passing_year }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label-custom">Percentage / CGPA</label>
+            {{ profile_form.percentage_cgpa }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="card-custom p-3 bg-light border-0">
+        <button type="submit" class="btn btn-primary-custom w-100 py-2 fs-6">
+          <i class="bi bi-save me-1"></i> Update Profile Information
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</form>
+{% endblock %}

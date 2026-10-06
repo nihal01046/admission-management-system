@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard - College Admission System{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+  <h3 class="fw-bold mb-1" style="color: #0B3A6E;">Admin Dashboard</h3>
+  <p class="text-secondary mb-0">Welcome back, Admin! Here's an overview of the system.</p>
+</div>
+
+<!-- 4 Summary Stat Cards matching Reference Image 2 #3 -->
+<div class="row g-3 mb-4">
+  <!-- Total Students -->
+  <div class="col-sm-6 col-xl-3">
+    <div class="stat-card">
+      <div class="stat-header">
+        <span class="stat-title">Total Students</span>
+        <div class="stat-icon stat-icon-blue"><i class="bi bi-people-fill"></i></div>
+      </div>
+      <div class="stat-value">{{ total_students }}</div>
+      <a href="{% url 'students:manage' %}" class="stat-link">Manage Students <i class="bi bi-arrow-right"></i></a>
+    </div>
+  </div>
+
+  <!-- Total Applications -->
+  <div class="col-sm-6 col-xl-3">
+    <div class="stat-card">
+      <div class="stat-header">
+        <span class="stat-title">Total Applications</span>
+        <div class="stat-icon stat-icon-green"><i class="bi bi-file-earmark-text-fill"></i></div>
+      </div>
+      <div class="stat-value">{{ total_applications }}</div>
+      <a href="{% url 'admissions:admin_manage' %}" class="stat-link">View Applications <i class="bi bi-arrow-right"></i></a>
+    </div>
+  </div>
+
+  <!-- Pending Verification -->
+  <div class="col-sm-6 col-xl-3">
+    <div class="stat-card">
+      <div class="stat-header">
+        <span class="stat-title">Pending Verification</span>
+        <div class="stat-icon stat-icon-amber"><i class="bi bi-hourglass-split"></i></div>
+      </div>
+      <div class="stat-value">{{ pending_verification }}</div>
+      <a href="{% url 'admissions:admin_manage' %}?status=Submitted" class="stat-link">Review Queue <i class="bi bi-arrow-right"></i></a>
+    </div>
+  </div>
+
+  <!-- Enrolled Students -->
+  <div class="col-sm-6 col-xl-3">
+    <div class="stat-card">
+      <div class="stat-header">
+        <span class="stat-title">Enrolled Students</span>
+        <div class="stat-icon stat-icon-purple"><i class="bi bi-award-fill"></i></div>
+      </div>
+      <div class="stat-value">{{ enrolled_students }}</div>
+      <a href="{% url 'enrollments:manage' %}" class="stat-link">Enrolled Roster <i class="bi bi-arrow-right"></i></a>
+    </div>
+  </div>
+</div>
+
+<!-- Charts & Recent Activity Row -->
+<div class="row g-4 mb-4">
+  <!-- Left: Applications Overview Chart -->
+  <div class="col-lg-7">
+    <div class="card-custom h-100 mb-0">
+      <div class="card-custom-header">
+        <h5 class="card-title-custom">Applications Overview</h5>
+        <div class="d-flex align-items-center gap-3 small">
+          <span class="d-flex align-items-center gap-1"><span class="d-inline-block rounded-circle" style="width: 10px; height: 10px; background-color: #1677FF;"></span> Applied</span>
+          <span class="d-flex align-items-center gap-1"><span class="d-inline-block rounded-circle" style="width: 10px; height: 10px; background-color: #10B981;"></span> Approved</span>
+        </div>
+      </div>
+      
+      <div class="position-relative" style="height: 260px;">
+        <canvas id="applicationsChart" width="600" height="260" class="w-100 h-100"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: Recent Applications Table -->
+  <div class="col-lg-5">
+    <div class="card-custom h-100 mb-0 d-flex flex-column justify-content-between">
+      <div>
+        <div class="card-custom-header">
+          <h5 class="card-title-custom">Recent Applications</h5>
+          <a href="{% url 'admissions:admin_manage' %}" class="small text-decoration-none fw-semibold">View All</a>
+        </div>
+
+        <div class="table-custom-container border-0">
+          <table class="table-custom">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Course</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for app in recent_applications|slice:":5" %}
+                <tr>
+                  <td class="fw-medium">
+                    <a href="{% url 'admissions:admin_detail' app.application_id %}" class="text-dark text-decoration-none">
+                      {{ app.full_name }}
+                    </a>
+                  </td>
+                  <td><span class="badge bg-light text-dark border">{{ app.course.course_code }}</span></td>
+                  <td>
+                    {% if app.status == 'Approved' or app.status == 'Enrolled' %}
+                      <span class="badge-custom badge-approved">{{ app.status }}</span>
+                    {% elif app.status == 'Rejected' %}
+                      <span class="badge-custom badge-rejected">Rejected</span>
+                    {% else %}
+                      <span class="badge-custom badge-pending">{{ app.status }}</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="3" class="text-center py-3 text-muted">No recent applications</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="border-top pt-3 mt-3 text-end">
+        <a href="{% url 'admissions:admin_manage' %}" class="btn btn-outline-custom py-1 px-3 small">
+          Process Queue <i class="bi bi-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bottom Section: Course Seats & Quick Actions -->
+<div class="card-custom">
+  <div class="card-custom-header">
+    <h5 class="card-title-custom">Offered Courses Seat Matrix</h5>
+    <a href="{% url 'courses:manage' %}" class="btn btn-primary-custom py-1 px-3 small">
+      <i class="bi bi-gear"></i> Manage Courses
+    </a>
+  </div>
+  
+  <div class="row g-3">
+    {% for course in courses %}
+      <div class="col-md-4 col-sm-6">
+        <div class="p-3 rounded-3 bg-light border">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <span class="fw-bold text-dark">{{ course.course_name }}</span>
+            <span class="badge bg-primary">{{ course.course_code }}</span>
+          </div>
+          <div class="small text-secondary mb-2">{{ course.department }}</div>
+          <div class="d-flex justify-content-between small text-muted mb-1">
+            <span>Filled: {{ course.filled_seats }}/{{ course.total_seats }}</span>
+            <span class="fw-semibold text-success">{{ course.available_seats }} Available</span>
+          </div>
+          <div class="progress" style="height: 6px;">
+            <div class="progress-bar bg-primary" role="progressbar" style="width: {{ course.occupancy_rate }}%;"></div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const labels = {{ chart_labels|safe }};
+    const appliedData = {{ chart_applied|safe }};
+    const approvedData = {{ chart_approved|safe }};
+    initAdminChart('applicationsChart', labels, appliedData, approvedData);
+  });
+</script>
+{% endblock %}

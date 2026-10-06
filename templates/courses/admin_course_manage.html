@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Course Management - College Admission System{% endblock %}
+
+{% block content %}
+<!-- Page Header matching Image 1 #6 & Image 2 #4 -->
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+  <div>
+    <h3 class="fw-bold mb-1" style="color: #0B3A6E;">Course Management</h3>
+    <p class="text-secondary mb-0">Add, update and manage courses offered by the college.</p>
+  </div>
+  <a href="{% url 'courses:create' %}" class="btn btn-primary-custom px-3 py-2">
+    <i class="bi bi-plus-lg"></i> Add Course
+  </a>
+</div>
+
+<!-- Search Filter -->
+<div class="card-custom mb-3 p-3">
+  <form method="get" class="row g-2 align-items-center">
+    <div class="col-md-9">
+      <div class="input-icon-group">
+        <i class="bi bi-search"></i>
+        <input type="text" name="q" value="{{ query }}" class="form-control-custom" placeholder="Search by course name, code, or department...">
+      </div>
+    </div>
+    <div class="col-md-3 d-flex gap-2">
+      <button type="submit" class="btn btn-navy-custom w-100 py-2">Search</button>
+      {% if query %}
+        <a href="{% url 'courses:manage' %}" class="btn btn-outline-custom py-2 px-3" title="Clear">
+          <i class="bi bi-x-lg"></i>
+        </a>
+      {% endif %}
+    </div>
+  </form>
+</div>
+
+<!-- Main Courses Table matching Image 1 #6 & Image 2 #4 -->
+<div class="card-custom p-0 overflow-hidden mb-4">
+  <div class="table-custom-container border-0">
+    <table class="table-custom">
+      <thead>
+        <tr>
+          <th style="width: 50px;">#</th>
+          <th>Course Name</th>
+          <th>Department</th>
+          <th>Duration</th>
+          <th>Seats</th>
+          <th>Status</th>
+          <th class="text-center" style="width: 120px;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for course in courses %}
+          <tr>
+            <td class="text-secondary fw-semibold">{{ forloop.counter }}</td>
+            <td class="fw-bold text-dark">
+              {{ course.course_name }}
+              <span class="badge bg-light text-primary border ms-1 small">{{ course.course_code }}</span>
+            </td>
+            <td>{{ course.department }}</td>
+            <td>{{ course.duration }}</td>
+            <td>
+              <span class="fw-semibold">{{ course.total_seats }}</span>
+              <small class="text-muted">({{ course.available_seats }} left)</small>
+            </td>
+            <td>
+              {% if course.status == 'Active' %}
+                <span class="badge-custom badge-approved">Active</span>
+              {% else %}
+                <span class="badge-custom badge-rejected">Inactive</span>
+              {% endif %}
+            </td>
+            <td class="text-center">
+              <div class="d-inline-flex gap-2">
+                <a href="{% url 'courses:edit' course.id %}" class="btn-icon btn-icon-blue" title="Edit Course">
+                  <i class="bi bi-pencil-square"></i>
+                </a>
+                <a href="{% url 'courses:delete' course.id %}" class="btn-icon btn-icon-red" title="Deactivate / Delete Course">
+                  <i class="bi bi-trash"></i>
+                </a>
+              </div>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="7" class="text-center py-4 text-muted">No courses found. Click "+ Add Course" to create one.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Quick Actions Section matching Image 1 #6 & Image 2 #4 -->
+<div class="card-custom">
+  <h6 class="fw-bold text-dark mb-3">Quick Actions</h6>
+  <div class="row g-3">
+    <div class="col-sm-6 col-md-3">
+      <a href="{% url 'courses:manage' %}" class="btn btn-outline-custom w-100 py-3 text-start d-flex align-items-center gap-3">
+        <i class="bi bi-diagram-3 fs-4 text-primary"></i>
+        <div>
+          <div class="fw-semibold small">Manage Departments</div>
+          <small class="text-muted" style="font-size: 0.75rem;">View faculties</small>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-sm-6 col-md-3">
+      <a href="{% url 'reports:overview' %}" class="btn btn-outline-custom w-100 py-3 text-start d-flex align-items-center gap-3">
+        <i class="bi bi-book fs-4 text-success"></i>
+        <div>
+          <div class="fw-semibold small">View Seat Availability</div>
+          <small class="text-muted" style="font-size: 0.75rem;">Matrix breakdown</small>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-sm-6 col-md-3">
+      <a href="{% url 'courses:list' %}" class="btn btn-outline-custom w-100 py-3 text-start d-flex align-items-center gap-3">
+        <i class="bi bi-ui-checks fs-4 text-info"></i>
+        <div>
+          <div class="fw-semibold small">Course Eligibility</div>
+          <small class="text-muted" style="font-size: 0.75rem;">Criteria details</small>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-sm-6 col-md-3">
+      <a href="{% url 'reports:overview' %}" class="btn btn-outline-custom w-100 py-3 text-start d-flex align-items-center gap-3">
+        <i class="bi bi-file-earmark-spreadsheet fs-4 text-warning"></i>
+        <div>
+          <div class="fw-semibold small">Generate Report</div>
+          <small class="text-muted" style="font-size: 0.75rem;">Export metrics</small>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

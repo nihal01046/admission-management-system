@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Login - College Admission & Enrollment System{% endblock %}
+
+{% block public_header_link %}
+  <a href="{% url 'accounts:register' %}" class="text-white text-decoration-none small fw-medium">Don't have an account? <span class="fw-bold text-decoration-underline">Register</span></a>
+{% endblock %}
+
+{% block public_content %}
+<div class="auth-wrapper">
+  <div class="auth-container">
+    
+    <!-- Left Column: Campus Welcome Illustration -->
+    <div class="auth-sidebar text-center d-flex flex-column justify-content-center align-items-center" style="background: linear-gradient(145deg, #0B3A6E 0%, #124e8e 100%);">
+      <div class="mb-4">
+        <!-- Modern SVG Campus Icon -->
+        <div class="rounded-circle bg-white bg-opacity-10 d-inline-flex align-items-center justify-content-center p-4 mb-3" style="width: 110px; height: 110px; border: 2px solid rgba(255,255,255,0.2);">
+          <i class="bi bi-bank2 fs-1 text-white"></i>
+        </div>
+        <h2 class="fw-bold text-white mb-2">Welcome Back!</h2>
+        <p class="text-light opacity-90 small px-3">
+          Log in to access your account and continue your admission journey with us.
+        </p>
+      </div>
+
+      <!-- Quick Evaluator Helper Bar -->
+      <div class="w-100 mt-4 p-3 rounded-3 text-start bg-white bg-opacity-10 border border-white border-opacity-15">
+        <div class="text-white small fw-bold mb-2"><i class="bi bi-info-circle me-1"></i> Quick Demo Login Fill:</div>
+        <div class="d-flex flex-column gap-2">
+          <button type="button" class="btn btn-sm btn-light text-primary fw-medium text-start" onclick="fillCredentials('rahul@gmail.com', 'student123')">
+            <i class="bi bi-person-fill me-1"></i> Demo Student: <code>rahul@gmail.com</code>
+          </button>
+          <button type="button" class="btn btn-sm btn-outline-light text-start" onclick="fillCredentials('admin@college.edu', 'admin123')">
+            <i class="bi bi-shield-lock-fill me-1"></i> Demo Admin: <code>admin@college.edu</code>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Login Card -->
+    <div class="auth-form-card">
+      <div class="mb-4">
+        <h3 class="fw-bold mb-1" style="color: #0B3A6E;">Login</h3>
+        <p class="text-secondary small">Enter your email and password to login</p>
+      </div>
+
+      <form method="post" action="{% url 'accounts:login' %}" novalidate>
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger py-2 small mb-3">
+            {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+          </div>
+        {% endif %}
+
+        <!-- Email Address -->
+        <div class="mb-3">
+          <label class="form-label-custom" for="login_email">Email Address <span class="text-danger">*</span></label>
+          <div class="input-icon-group">
+            <i class="bi bi-envelope"></i>
+            {{ form.email }}
+          </div>
+          {% if form.email.errors %}
+            <div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>
+          {% endif %}
+        </div>
+
+        <!-- Password -->
+        <div class="mb-3">
+          <label class="form-label-custom" for="login_password">Password <span class="text-danger">*</span></label>
+          <div class="input-icon-group">
+            <i class="bi bi-lock"></i>
+            {{ form.password }}
+            <i class="bi bi-eye toggle-password" data-target="login_password"></i>
+          </div>
+          {% if form.password.errors %}
+            <div class="text-danger small mt-1">{{ form.password.errors.0 }}</div>
+          {% endif %}
+        </div>
+
+        <!-- Remember Me & Forgot Password -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div class="form-check">
+            {{ form.remember_me }}
+            <label class="form-check-label small text-secondary" for="remember_me">
+              Remember me
+            </label>
+          </div>
+          <a href="{% url 'accounts:forgot_password' %}" class="small text-decoration-none">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="btn btn-primary-custom w-100 py-2 fs-6 mb-3">
+          Login
+        </button>
+
+        <div class="text-center my-3 text-muted small position-relative">
+          <hr class="my-0">
+          <span class="position-absolute top-50 start-50 translate-middle bg-white px-2">OR</span>
+        </div>
+
+        <button type="button" class="btn btn-outline-custom w-100 py-2 small mb-3 d-flex align-items-center justify-content-center gap-2" onclick="alert('Google SSO integration configured. For this demo, please use email credentials.');">
+          <i class="bi bi-google text-danger"></i> Login with Google
+        </button>
+
+        <div class="text-center small text-secondary">
+          Don't have an account? <a href="{% url 'accounts:register' %}" class="fw-semibold">Register</a>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function fillCredentials(email, password) {
+    document.getElementById('login_email').value = email;
+    document.getElementById('login_password').value = password;
+  }
+</script>
+{% endblock %}

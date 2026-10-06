@@ -1,0 +1,231 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}College Admission & Enrollment Management System{% endblock %}</title>
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  
+  <!-- Custom Design System CSS -->
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+  <!-- Top Header Navigation -->
+  <header class="portal-header">
+    <div class="d-flex align-items-center gap-3">
+      {% if user.is_authenticated %}
+      <button class="btn btn-link text-white p-0 d-lg-none" id="sidebarToggle" aria-label="Toggle Menu">
+        <i class="bi bi-list fs-3"></i>
+      </button>
+      {% endif %}
+      <a href="{% if user.is_authenticated %}{% if user.is_admin_user %}{% url 'accounts:admin_dashboard' %}{% else %}{% url 'students:dashboard' %}{% endif %}{% else %}{% url 'accounts:home' %}{% endif %}" class="portal-brand text-decoration-none">
+        <i class="bi bi-mortarboard-fill"></i>
+        <span>College Admission & Enrollment System</span>
+      </a>
+    </div>
+
+    <div class="portal-header-right">
+      {% if user.is_authenticated %}
+        <!-- Notification Dropdown -->
+        <div class="dropdown">
+          <button class="notification-bell-btn" id="notifDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="Notifications">
+            <i class="bi bi-bell"></i>
+            {% if unread_notifications_count > 0 %}
+              <span class="notification-badge">{{ unread_notifications_count }}</span>
+            {% endif %}
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-2" aria-labelledby="notifDropdown" style="width: 320px; max-height: 400px; overflow-y: auto;">
+            <li class="d-flex justify-content-between align-items-center px-2 py-1 mb-1 border-bottom">
+              <span class="fw-bold fs-6">Notifications</span>
+              {% if unread_notifications_count > 0 %}
+                <span class="badge bg-primary rounded-pill">{{ unread_notifications_count }} New</span>
+              {% endif %}
+            </li>
+            {% if recent_notifications %}
+              {% for notif in recent_notifications %}
+                <li>
+                  <a class="dropdown-item rounded p-2 text-wrap mb-1 {% if not notif.is_read %}bg-light fw-medium{% endif %}" href="{% if notif.link %}{{ notif.link }}{% else %}{% url 'notifications:list' %}{% endif %}">
+                    <div class="small fw-semibold text-dark">{{ notif.title }}</div>
+                    <div class="text-secondary small text-truncate">{{ notif.message }}</div>
+                    <div class="text-muted" style="font-size: 0.72rem;">{{ notif.created_at|timesince }} ago</div>
+                  </a>
+                </li>
+              {% endfor %}
+            {% else %}
+              <li class="text-center text-muted py-3 small">No notifications yet</li>
+            {% endif %}
+            <li class="border-top pt-1 text-center">
+              <a href="{% url 'notifications:list' %}" class="small text-decoration-none fw-semibold">View All Notifications</a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- User Profile Dropdown -->
+        <div class="dropdown">
+          <button class="header-user-btn" id="userMenuDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <div class="header-avatar">
+              {% if user.profile_picture %}
+                <img src="{{ user.profile_picture.url }}" alt="{{ user.full_name }}" class="w-100 h-100 rounded-circle">
+              {% else %}
+                {{ user.first_name|first|default:user.username|first|upper }}
+              {% endif %}
+            </div>
+            <span class="header-user-name d-none d-sm-inline">{{ user.full_name|default:user.username }}</span>
+            <i class="bi bi-chevron-down small opacity-75"></i>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-2" aria-labelledby="userMenuDropdown">
+            <li class="px-3 py-2 border-bottom mb-1">
+              <div class="fw-bold text-dark">{{ user.full_name }}</div>
+              <div class="small text-muted">{{ user.email }}</div>
+              <div class="badge bg-light text-primary mt-1 border">{{ user.get_role_display }}</div>
+            </li>
+            {% if user.is_student %}
+              <li><a class="dropdown-item rounded" href="{% url 'students:profile' %}"><i class="bi bi-person me-2"></i> My Profile</a></li>
+            {% endif %}
+            <li><a class="dropdown-item rounded" href="{% url 'accounts:settings' %}"><i class="bi bi-gear me-2"></i> Settings</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <form action="{% url 'accounts:logout' %}" method="post" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="dropdown-item rounded text-danger"><i class="bi bi-box-arrow-left me-2"></i> Logout</button>
+              </form>
+            </li>
+          </ul>
+        </div>
+      {% else %}
+        <!-- Public Navigation Header Links -->
+        <div class="d-flex align-items-center gap-3">
+          {% block public_header_link %}
+            <a href="{% url 'accounts:login' %}" class="text-white text-decoration-none small fw-medium">Already have an account? <span class="fw-bold text-decoration-underline">Login</span></a>
+          {% endblock %}
+        </div>
+      {% endif %}
+    </div>
+  </header>
+
+  <!-- Flash Messages Alert Bar -->
+  {% if messages %}
+    <div class="container-fluid px-4 pt-3">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show alert-auto-dismiss shadow-sm border-0 d-flex align-items-center justify-content-between" role="alert">
+          <div>
+            <i class="bi {% if message.tags == 'success' %}bi-check-circle-fill text-success{% elif message.tags == 'danger' %}bi-exclamation-triangle-fill text-danger{% else %}bi-info-circle-fill text-primary{% endif %} me-2"></i>
+            {{ message }}
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- Main Body Content -->
+  {% if user.is_authenticated %}
+    <div class="portal-layout">
+      <!-- Responsive Sidebar -->
+      <aside class="portal-sidebar">
+        <ul class="sidebar-menu">
+          {% if user.is_student %}
+            <!-- Student Sidebar Menu -->
+            <li class="sidebar-item {% if request.resolver_match.view_name == 'students:dashboard' %}active{% endif %}">
+              <a href="{% url 'students:dashboard' %}"><i class="bi bi-speedometer2"></i> Dashboard</a>
+            </li>
+            <li class="sidebar-item {% if request.resolver_match.view_name == 'students:profile' %}active{% endif %}">
+              <a href="{% url 'students:profile' %}"><i class="bi bi-person"></i> My Profile</a>
+            </li>
+            <li class="sidebar-item {% if request.resolver_match.view_name == 'admissions:apply' %}active{% endif %}">
+              <a href="{% url 'admissions:apply' %}"><i class="bi bi-file-earmark-plus"></i> Apply for Admission</a>
+            </li>
+            <li class="sidebar-item {% if 'my_applications' in request.resolver_match.view_name or 'application_detail' in request.resolver_match.view_name %}active{% endif %}">
+              <a href="{% url 'admissions:my_applications' %}"><i class="bi bi-journal-text"></i> My Applications</a>
+            </li>
+            <li class="sidebar-item {% if 'courses' in request.resolver_match.app_name and not user.is_admin_user %}active{% endif %}">
+              <a href="{% url 'courses:list' %}"><i class="bi bi-book"></i> Courses</a>
+            </li>
+            <li class="sidebar-item {% if 'enrollments' in request.resolver_match.app_name %}active{% endif %}">
+              <a href="{% url 'enrollments:my_enrollments' %}"><i class="bi bi-award"></i> Enrollment</a>
+            </li>
+            <li class="sidebar-item {% if 'documents' in request.resolver_match.app_name %}active{% endif %}">
+              <a href="{% url 'documents:list' %}"><i class="bi bi-folder2-open"></i> Documents</a>
+            </li>
+            <li class="sidebar-item {% if 'notifications' in request.resolver_match.app_name %}active{% endif %}">
+              <a href="{% url 'notifications:list' %}"><i class="bi bi-bell"></i> Notifications</a>
+            </li>
+            <li class="sidebar-item {% if request.resolver_match.view_name == 'accounts:settings' %}active{% endif %}">
+              <a href="{% url 'accounts:settings' %}"><i class="bi bi-gear"></i> Settings</a>
+            </li>
+          {% else %}
+            <!-- Admin Sidebar Menu -->
+            <li class="sidebar-item {% if request.resolver_match.view_name == 'accounts:admin_dashboard' %}active{% endif %}">
+              <a href="{% url 'accounts:admin_dashboard' %}"><i class="bi bi-speedometer2"></i> Dashboard</a>
+            </li>
+            <li class="sidebar-item {% if 'students:manage' in request.resolver_match.view_name or 'student_detail' in request.resolver_match.view_name %}active{% endif %}">
+              <a href="{% url 'students:manage' %}"><i class="bi bi-people"></i> Students</a>
+            </li>
+            <li class="sidebar-item {% if 'admissions:admin' in request.resolver_match.view_name %}active{% endif %}">
+              <a href="{% url 'admissions:admin_manage' %}"><i class="bi bi-file-earmark-text"></i> Applications</a>
+            </li>
+            <li class="sidebar-item {% if 'courses' in request.resolver_match.app_name %}active{% endif %}">
+              <a href="{% url 'courses:manage' %}"><i class="bi bi-box-seam"></i> Courses</a>
+            </li>
+            <li class="sidebar-item {% if 'enrollments' in request.resolver_match.app_name %}active{% endif %}">
+              <a href="{% url 'enrollments:manage' %}"><i class="bi bi-award"></i> Enrollment</a>
+            </li>
+            <li class="sidebar-item {% if 'documents' in request.resolver_match.app_name %}active{% endif %}">
+              <a href="{% url 'documents:manage' %}"><i class="bi bi-folder2-open"></i> Documents</a>
+            </li>
+            <li class="sidebar-item {% if 'reports' in request.resolver_match.app_name %}active{% endif %}">
+              <a href="{% url 'reports:overview' %}"><i class="bi bi-bar-chart"></i> Reports</a>
+            </li>
+            <li class="sidebar-item {% if request.resolver_match.view_name == 'accounts:settings' %}active{% endif %}">
+              <a href="{% url 'accounts:settings' %}"><i class="bi bi-gear"></i> Settings</a>
+            </li>
+          {% endif %}
+        </ul>
+
+        <div class="sidebar-footer">
+          <form action="{% url 'accounts:logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-link text-white text-decoration-none w-100 text-start p-2 d-flex align-items-center gap-2 rounded hover-bg">
+              <i class="bi bi-box-arrow-left"></i> Logout
+            </button>
+          </form>
+        </div>
+      </aside>
+
+      <!-- Main App Content -->
+      <main class="portal-content">
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  {% else %}
+    <!-- Public Content (Landing, Login, Register) -->
+    <main class="flex-grow-1">
+      {% block public_content %}{% endblock %}
+    </main>
+  {% endif %}
+
+  {% block modals %}{% endblock %}
+
+  <!-- Bootstrap 5 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Custom Portal Scripts -->
+  <script src="{% static 'js/main.js' %}"></script>
+  
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

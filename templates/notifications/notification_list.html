@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Notifications - College Admission System{% endblock %}
+
+{% block content %}
+<div class="mb-4 d-flex flex-wrap justify-content-between align-items-center gap-3">
+  <div>
+    <h3 class="fw-bold mb-1" style="color: #0B3A6E;">Notifications</h3>
+    <p class="text-secondary mb-0">Stay updated on your application status, verification alerts, and deadlines</p>
+  </div>
+  
+  {% if notifications %}
+    <form action="{% url 'notifications:mark_all_read' %}" method="post">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-outline-custom py-2 px-3 small">
+        <i class="bi bi-check2-all me-1"></i> Mark All as Read
+      </button>
+    </form>
+  {% endif %}
+</div>
+
+<!-- Filter Tabs -->
+<div class="mb-3 d-flex gap-2">
+  <a href="?filter=all" class="btn btn-sm {% if filter_type != 'unread' %}btn-primary-custom{% else %}btn-outline-custom{% endif %} px-3 py-1">
+    All
+  </a>
+  <a href="?filter=unread" class="btn btn-sm {% if filter_type == 'unread' %}btn-primary-custom{% else %}btn-outline-custom{% endif %} px-3 py-1">
+    Unread Only
+  </a>
+</div>
+
+<!-- Notification Items List -->
+<div class="card-custom p-0 overflow-hidden">
+  <div class="list-group list-group-flush">
+    {% for notif in notifications %}
+      <div class="list-group-item p-3 d-flex justify-content-between align-items-start gap-3 {% if not notif.is_read %}bg-light bg-opacity-75 border-start border-4 border-primary{% endif %}">
+        <div class="d-flex align-items-start gap-3">
+          <!-- Type Icon -->
+          <div class="stat-icon rounded-circle mt-1 flex-shrink-0" style="width: 38px; height: 38px; font-size: 1rem;
+            {% if notif.notification_type == 'SUCCESS' %}background: #D1FAE5; color: #059669;
+            {% elif notif.notification_type == 'WARNING' %}background: #FEF3C7; color: #D97706;
+            {% elif notif.notification_type == 'DANGER' %}background: #FEE2E2; color: #DC2626;
+            {% else %}background: #E0F2FE; color: #0284C7;{% endif %}">
+            <i class="bi {% if notif.notification_type == 'SUCCESS' %}bi-check-circle-fill{% elif notif.notification_type == 'WARNING' %}bi-exclamation-triangle-fill{% elif notif.notification_type == 'DANGER' %}bi-x-circle-fill{% else %}bi-info-circle-fill{% endif %}"></i>
+          </div>
+
+          <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <h6 class="mb-0 fw-bold text-dark">{{ notif.title }}</h6>
+              {% if not notif.is_read %}
+                <span class="badge bg-primary rounded-pill" style="font-size: 0.65rem;">New</span>
+              {% endif %}
+            </div>
+            <p class="text-secondary small mb-1">{{ notif.message }}</p>
+            <small class="text-muted" style="font-size: 0.75rem;">
+              <i class="bi bi-clock me-1"></i> {{ notif.created_at|timesince }} ago
+            </small>
+          </div>
+        </div>
+
+        <div class="d-flex align-items-center gap-2 flex-shrink-0">
+          {% if notif.link %}
+            <a href="{% url 'notifications:mark_as_read' notif.id %}" class="btn btn-sm btn-outline-custom py-1 px-3 small">
+              View <i class="bi bi-arrow-right"></i>
+            </a>
+          {% elif not notif.is_read %}
+            <a href="{% url 'notifications:mark_as_read' notif.id %}" class="btn btn-sm btn-outline-secondary py-1 px-2 small" title="Mark Read">
+              <i class="bi bi-check2"></i>
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    {% empty %}
+      <div class="text-center py-5 text-muted">
+        <i class="bi bi-bell-slash display-4 mb-3 d-block text-muted"></i>
+        <h6>No Notifications</h6>
+        <p class="small mb-0">You're all caught up with your college admissions activity.</p>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

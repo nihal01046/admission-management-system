@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ course.course_name }} - Course Details{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+  <a href="{% url 'courses:list' %}" class="btn btn-outline-custom py-1 px-3 small mb-2">
+    <i class="bi bi-arrow-left"></i> Back to Courses
+  </a>
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+    <div>
+      <div class="d-flex align-items-center gap-2 mb-1">
+        <span class="badge bg-primary fs-6">{{ course.course_code }}</span>
+        <h3 class="fw-bold mb-0" style="color: #0B3A6E;">{{ course.course_name }}</h3>
+      </div>
+      <p class="text-secondary mb-0">Department of {{ course.department }}</p>
+    </div>
+
+    {% if user.is_authenticated and user.is_student %}
+      <a href="{% url 'admissions:apply' %}" class="btn btn-primary-custom px-4 py-2 fs-6 {% if not course.has_available_seats %}disabled{% endif %}">
+        <i class="bi bi-pencil-square"></i> Apply for this Course
+      </a>
+    {% else %}
+      <a href="{% url 'accounts:register' %}" class="btn btn-primary-custom px-4 py-2 fs-6">
+        <i class="bi bi-pencil-square"></i> Register & Apply
+      </a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-8">
+    <!-- Overview & Description -->
+    <div class="card-custom mb-4">
+      <div class="card-custom-header">
+        <h5 class="card-title-custom">Program Overview</h5>
+      </div>
+      <p class="text-secondary">{{ course.description }}</p>
+    </div>
+
+    <!-- Eligibility Criteria -->
+    <div class="card-custom mb-4">
+      <div class="card-custom-header">
+        <h5 class="card-title-custom"><i class="bi bi-shield-check text-success me-2"></i> Eligibility Requirements</h5>
+      </div>
+      <div class="p-3 bg-light rounded-3 border">
+        <p class="mb-0 text-dark">{{ course.eligibility }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <!-- Course Quick Facts Card -->
+    <div class="card-custom mb-4">
+      <div class="card-custom-header">
+        <h5 class="card-title-custom">Course Quick Facts</h5>
+      </div>
+      
+      <div class="d-flex flex-column gap-3">
+        <div class="d-flex justify-content-between border-bottom pb-2">
+          <span class="text-secondary small">Duration</span>
+          <span class="fw-semibold text-dark">{{ course.duration }}</span>
+        </div>
+        <div class="d-flex justify-content-between border-bottom pb-2">
+          <span class="text-secondary small">Total Seats</span>
+          <span class="fw-semibold text-dark">{{ course.total_seats }}</span>
+        </div>
+        <div class="d-flex justify-content-between border-bottom pb-2">
+          <span class="text-secondary small">Available Seats</span>
+          <span class="fw-bold text-success">{{ course.available_seats }}</span>
+        </div>
+        <div class="d-flex justify-content-between border-bottom pb-2">
+          <span class="text-secondary small">Annual Fee</span>
+          <span class="fw-bold text-primary fs-5">₹{{ course.fees|floatformat:0 }}</span>
+        </div>
+        <div class="d-flex justify-content-between">
+          <span class="text-secondary small">Status</span>
+          <span class="badge {% if course.status == 'Active' %}bg-success{% else %}bg-secondary{% endif %}">{{ course.status }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

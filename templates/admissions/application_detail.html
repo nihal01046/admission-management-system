@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Application Details: {{ application.application_id }} - College Admission System{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+  <a href="{% url 'admissions:my_applications' %}" class="btn btn-outline-custom py-1 px-3 small mb-2">
+    <i class="bi bi-arrow-left"></i> Back to My Applications
+  </a>
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+    <div>
+      <div class="d-flex align-items-center gap-2 mb-1">
+        <h3 class="fw-bold mb-0" style="color: #0B3A6E;">Application #{{ application.application_id }}</h3>
+        <span class="badge-custom {{ application.status_badge_class }} fs-6">{{ application.status }}</span>
+      </div>
+      <p class="text-secondary mb-0">Course: <strong class="text-dark">{{ application.course.course_name }} ({{ application.course.course_code }})</strong> | Applied on: {{ application.submitted_at|date:"M d, Y"|default:application.created_at|date:"M d, Y" }}</p>
+    </div>
+
+    {% if application.status == 'Approved' and not application.is_enrolled %}
+      <a href="{% url 'enrollments:enroll_student' application.application_id %}" class="btn btn-primary-custom px-4 py-2 fs-6">
+        <i class="bi bi-check2-circle"></i> Proceed to Enrollment
+      </a>
+    {% elif application.is_enrolled %}
+      <a href="{% url 'enrollments:confirmation' application.application_id %}" class="btn btn-success px-4 py-2 fs-6">
+        <i class="bi bi-award"></i> View Enrollment Confirmation
+      </a>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Status Alert Banners -->
+{% if application.status == 'Approved' and not application.is_enrolled %}
+  <div class="alert alert-success d-flex align-items-center justify-content-between p-3 rounded-3 shadow-sm mb-4">
+    <div class="d-flex align-items-center gap-3">
+      <i class="bi bi-check-circle-fill fs-2 text-success"></i>
+      <div>
+        <h6 class="fw-bold mb-1">Admission Approved!</h6>
+        <p class="mb-0 small text-secondary">The college admissions committee has approved your application for <strong>{{ application.course.course_name }}</strong>. Click proceed to secure your admission.</p>
+      </div>
+    </div>
+    <a href="{% url 'enrollments:enroll_student' application.application_id %}" class="btn btn-success px-4 py-2">
+      Enroll Now &rarr;
+    </a>
+  </div>
+{% elif application.status == 'Rejected' %}
+  <div class="alert alert-danger p-3 rounded-3 shadow-sm mb-4">
+    <div class="d-flex align-items-start gap-3">
+      <i class="bi bi-x-circle-fill fs-2 text-danger"></i>
+      <div>
+        <h6 class="fw-bold mb-1">Application Rejected</h6>
+        <p class="mb-0 small">Reason for rejection: <strong class="text-dark">{{ application.rejection_reason|default:"Minimum qualifying marks or seat cutoff criteria not met." }}</strong></p>
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+<div class="row g-4">
+  <!-- Left Column: Details -->
+  <div class="col-lg-8">
+    
+    <!-- Personal Information Card -->
+    <div class="card-custom mb-4">
+      <div class="card-custom-header">
+        <h5 class="card-title-custom"><i class="bi bi-person me-2"></i> Applicant Information</h5>
+      </div>
+      <div class="row g-3 small">
+        <div class="col-md-6"><strong>Full Name:</strong> <span class="text-secondary d-block">{{ application.full_name }}</span></div>
+        <div class="col-md-6"><strong>Email Address:</strong> <span class="text-secondary d-block">{{ application.email }}</span></div>
+        <div class="col-md-6"><strong>Phone Number:</strong> <span class="text-secondary d-block">{{ application.phone_number }}</span></div>
+        <div class="col-md-6"><strong>Date of Birth:</strong> <span class="text-secondary d-block">{{ application.date_of_birth|date:"M d, Y" }}</span></div>
+        <div class="col-md-6"><strong>Gender:</strong> <span class="text-secondary d-block">{{ application.gender }}</span></div>
+        <div class="col-md-6"><strong>Address:</strong> <span class="text-secondary d-block">{{ application.address }}</span></div>
+        <div class="col-md-6"><strong>Father's Name:</strong> <span class="text-secondary d-block">{{ application.father_name }}</span></div>
+        <div class="col-md-6"><strong>Mother's Name:</strong> <span class="text-secondary d-block">{{ application.mother_name }}</span></div>
+      </div>
+    </div>
+
+    <!-- Academic Information Card -->
+    <div class="card-custom mb-4">
+      <div class="card-custom-header">
+        <h5 class="card-title-custom"><i class="bi bi-mortarboard me-2"></i> Academic Qualifications</h5>
+      </div>
+      <div class="row g-3 small">
+        <div class="col-md-6"><strong>Previous School / College:</strong> <span class="text-secondary d-block">{{ application.previous_institution }}</span></div>
+        <div class="col-md-6"><strong>Qualification / Degree:</strong> <span class="text-secondary d-block">{{ application.qualification }}</span></div>
+        <div class="col-md-6"><strong>Board / University:</strong> <span class="text-secondary d-block">{{ application.board_university }}</span></div>
+        <div class="col-md-3"><strong>Passing Year:</strong> <span class="text-secondary d-block">{{ application.passing_year }}</span></div>
+        <div class="col-md-3"><strong>Percentage / CGPA:</strong> <span class="text-success fw-bold fs-6 d-block">{{ application.percentage_cgpa }}%</span></div>
+      </div>
+    </div>
+
+    <!-- Uploaded Documents Card -->
+    <div class="card-custom">
+      <div class="card-custom-header">
+        <h5 class="card-title-custom"><i class="bi bi-folder2-open me-2"></i> Attached Documents</h5>
+        <span class="badge bg-light text-primary border">{{ documents.count }}</span>
+      </div>
+      <div class="table-custom-container border-0">
+        <table class="table-custom">
+          <thead>
+            <tr>
+              <th>Document Type</th>
+              <th>File Name</th>
+              <th>Size</th>
+              <th>Status</th>
+              <th>File</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for doc in documents %}
+              <tr>
+                <td class="fw-medium">{{ doc.get_document_type_display }}</td>
+                <td>{{ doc.file_name }}</td>
+                <td class="small text-muted">{{ doc.file_size }}</td>
+                <td>
+                  {% if doc.status == 'Verified' %}
+                    <span class="badge-custom badge-approved">Verified</span>
+                  {% elif doc.status == 'Rejected' %}
+                    <span class="badge-custom badge-rejected" title="{{ doc.rejection_reason }}">Rejected</span>
+                  {% else %}
+                    <span class="badge-custom badge-warning">Pending</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if doc.file %}
+                    <a href="{{ doc.file.url }}" target="_blank" class="btn btn-sm btn-outline-custom py-0 px-2 small">
+                      <i class="bi bi-box-arrow-up-right"></i> View
+                    </a>
+                  {% else %}
+                    <span class="text-muted small">No file</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="5" class="text-center py-3 text-muted small">No documents attached yet.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Right Column: Status & Timeline -->
+  <div class="col-lg-4">
+    <!-- Course Summary -->
+    <div class="card-custom mb-4">
+      <div class="card-custom-header">
+        <h5 class="card-title-custom">Course Details</h5>
+      </div>
+      <div class="d-flex flex-column gap-2 small">
+        <div class="d-flex justify-content-between">
+          <span class="text-secondary">Program:</span>
+          <strong class="text-dark">{{ application.course.course_name }}</strong>
+        </div>
+        <div class="d-flex justify-content-between">
+          <span class="text-secondary">Code:</span>
+          <span class="badge bg-primary">{{ application.course.course_code }}</span>
+        </div>
+        <div class="d-flex justify-content-between">
+          <span class="text-secondary">Department:</span>
+          <span class="text-dark">{{ application.course.department }}</span>
+        </div>
+        <div class="d-flex justify-content-between">
+          <span class="text-secondary">Annual Tuition:</span>
+          <strong class="text-primary fs-6">₹{{ application.course.fees|floatformat:0 }}</strong>
+        </div>
+        <div class="d-flex justify-content-between">
+          <span class="text-secondary">Available Seats:</span>
+          <span class="text-success fw-bold">{{ application.course.available_seats }}/{{ application.course.total_seats }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Application Timeline -->
+    <div class="card-custom">
+      <div class="card-custom-header">
+        <h5 class="card-title-custom"><i class="bi bi-clock-history me-2"></i> Application History</h5>
+      </div>
+      <div class="timeline-vertical py-2">
+        {% for item in timeline %}
+          <div class="timeline-item">
+            <div class="timeline-dot completed">
+              <i class="bi bi-check"></i>
+            </div>
+            <div>
+              <div class="timeline-title">{{ item.title }}</div>
+              <div class="timeline-desc">{{ item.description }}</div>
+              <small class="text-muted" style="font-size: 0.72rem;">{{ item.created_at|date:"M d, Y H:i" }}</small>
+            </div>
+          </div>
+        {% empty %}
+          <div class="text-muted small">Timeline details will appear as application progresses.</div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manage Students - College Admission System{% endblock %}
+
+{% block content %}
+<div class="mb-4 d-flex flex-wrap justify-content-between align-items-center gap-3">
+  <div>
+    <h3 class="fw-bold mb-1" style="color: #0B3A6E;">Student Management</h3>
+    <p class="text-secondary mb-0">View registered applicants, academic profiles, and account statuses</p>
+  </div>
+  <span class="badge bg-light text-primary border px-3 py-2 fs-6">Total Students: {{ total_count }}</span>
+</div>
+
+<!-- Search & Filter Card -->
+<div class="card-custom mb-4 p-3">
+  <form method="get" class="row g-2 align-items-center">
+    <div class="col-md-6 col-lg-7">
+      <div class="input-icon-group">
+        <i class="bi bi-search"></i>
+        <input type="text" name="q" value="{{ query }}" class="form-control-custom" placeholder="Search by name, email, student ID, or phone...">
+      </div>
+    </div>
+    <div class="col-md-3 col-lg-3">
+      <select name="status" class="form-select-custom">
+        <option value="">All Account Statuses</option>
+        <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active Only</option>
+        <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactive Only</option>
+      </select>
+    </div>
+    <div class="col-md-3 col-lg-2 d-flex gap-2">
+      <button type="submit" class="btn btn-primary-custom w-100 py-2">
+        <i class="bi bi-filter"></i> Filter
+      </button>
+      {% if query or status_filter %}
+        <a href="{% url 'students:manage' %}" class="btn btn-outline-custom py-2 px-3" title="Clear Filters">
+          <i class="bi bi-x-lg"></i>
+        </a>
+      {% endif %}
+    </div>
+  </form>
+</div>
+
+<!-- Students Data Table -->
+<div class="card-custom p-0 overflow-hidden">
+  <div class="table-custom-container border-0">
+    <table class="table-custom">
+      <thead>
+        <tr>
+          <th>Student ID</th>
+          <th>Full Name</th>
+          <th>Email Address</th>
+          <th>Phone Number</th>
+          <th>Registered Date</th>
+          <th>Status</th>
+          <th class="text-center">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for student in page_obj %}
+          <tr>
+            <td>
+              <span class="badge bg-light text-dark border fw-bold">{{ student.student_profile.student_id|default:"STU-NEW" }}</span>
+            </td>
+            <td class="fw-medium text-dark">
+              {{ student.full_name }}
+            </td>
+            <td>{{ student.email }}</td>
+            <td>{{ student.phone_number|default:"-" }}</td>
+            <td class="text-secondary small">{{ student.date_joined|date:"M d, Y" }}</td>
+            <td>
+              {% if student.is_active %}
+                <span class="badge-custom badge-approved">Active</span>
+              {% else %}
+                <span class="badge-custom badge-rejected">Inactive</span>
+              {% endif %}
+            </td>
+            <td class="text-center">
+              <a href="{% url 'students:admin_student_detail' student.id %}" class="btn btn-sm btn-outline-custom py-1 px-3">
+                <i class="bi bi-eye"></i> View Profile
+              </a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="7" class="text-center py-4 text-muted">
+              No students found matching the search criteria.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination Controls -->
+  {% if page_obj.has_other_pages %}
+    <div class="p-3 border-top d-flex justify-content-between align-items-center">
+      <span class="small text-secondary">
+        Showing page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+      </span>
+      <nav>
+        <ul class="pagination pagination-sm mb-0">
+          {% if page_obj.has_previous %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">Previous</a>
+            </li>
+          {% endif %}
+          <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
+          {% if page_obj.has_next %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">Next</a>
+            </li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Settings - College Admission System{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+  <h3 class="fw-bold mb-1" style="color: #0B3A6E;">Account Settings</h3>
+  <p class="text-secondary mb-0">Manage your profile details and security credentials</p>
+</div>
+
+<div class="row g-4">
+  <!-- Profile Information -->
+  <div class="col-lg-7">
+    <div class="card-custom">
+      <div class="card-custom-header">
+        <h5 class="card-title-custom">Profile Information</h5>
+      </div>
+
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="update_profile">
+
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label class="form-label-custom">First Name</label>
+            {{ profile_form.first_name }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label-custom">Last Name</label>
+            {{ profile_form.last_name }}
+          </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label class="form-label-custom">Email Address</label>
+            <input type="text" class="form-control-custom bg-light" value="{{ user.email }}" disabled>
+            <small class="text-muted">Email address cannot be modified</small>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label-custom">Phone Number</label>
+            {{ profile_form.phone_number }}
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label-custom">Profile Picture</label>
+          {{ profile_form.profile_picture }}
+        </div>
+
+        <button type="submit" class="btn btn-primary-custom py-2 px-4">
+          <i class="bi bi-check2"></i> Save Changes
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Password Change -->
+  <div class="col-lg-5">
+    <div class="card-custom">
+      <div class="card-custom-header">
+        <h5 class="card-title-custom">Change Password</h5>
+      </div>
+
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="change_password">
+
+        {% for field in password_form %}
+          <div class="mb-3">
+            <label class="form-label-custom">{{ field.label }}</label>
+            <input type="password" name="{{ field.name }}" class="form-control-custom" id="id_{{ field.name }}">
+            {% if field.errors %}
+              <div class="text-danger small mt-1">{{ field.errors.0 }}</div>
+            {% endif %}
+          </div>
+        {% endfor %}
+
+        <button type="submit" class="btn btn-navy-custom py-2 px-4 w-100">
+          <i class="bi bi-shield-lock"></i> Update Password
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

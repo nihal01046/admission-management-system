@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Offered Courses - College Admission System{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+  <h3 class="fw-bold mb-1" style="color: #0B3A6E;">Academic Programs & Courses</h3>
+  <p class="text-secondary mb-0">Explore our undergraduate degree offerings, eligibility criteria, and seat availability</p>
+</div>
+
+<!-- Search & Department Filters -->
+<div class="card-custom mb-4 p-3">
+  <form method="get" class="row g-2 align-items-center">
+    <div class="col-md-6 col-lg-7">
+      <div class="input-icon-group">
+        <i class="bi bi-search"></i>
+        <input type="text" name="q" value="{{ query }}" class="form-control-custom" placeholder="Search by course name, code, or department...">
+      </div>
+    </div>
+    <div class="col-md-4 col-lg-3">
+      <select name="dept" class="form-select-custom">
+        <option value="">All Departments</option>
+        {% for dept in departments %}
+          <option value="{{ dept }}" {% if selected_dept == dept %}selected{% endif %}>{{ dept }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2 col-lg-2 d-flex gap-2">
+      <button type="submit" class="btn btn-primary-custom w-100 py-2">Filter</button>
+      {% if query or selected_dept %}
+        <a href="{% url 'courses:list' %}" class="btn btn-outline-custom py-2 px-3" title="Clear">
+          <i class="bi bi-x-lg"></i>
+        </a>
+      {% endif %}
+    </div>
+  </form>
+</div>
+
+<!-- Courses Grid -->
+<div class="row g-4">
+  {% for course in courses %}
+    <div class="col-md-6 col-lg-4">
+      <div class="card-custom h-100 card-custom-hover d-flex flex-column justify-content-between">
+        <div>
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <span class="badge bg-light text-primary border fw-bold px-2 py-1">{{ course.course_code }}</span>
+            {% if course.has_available_seats %}
+              <span class="badge badge-success">{{ course.available_seats }} Seats Left</span>
+            {% else %}
+              <span class="badge badge-danger">Seats Full</span>
+            {% endif %}
+          </div>
+          <h5 class="fw-bold text-dark mb-1">{{ course.course_name }}</h5>
+          <div class="text-secondary small mb-2"><i class="bi bi-building me-1"></i> Dept of {{ course.department }}</div>
+          <p class="text-muted small mb-3">{{ course.description|truncatewords:20 }}</p>
+
+          <div class="p-2 rounded-2 bg-light border small text-secondary mb-3">
+            <strong class="text-dark d-block mb-1"><i class="bi bi-check2-circle text-primary me-1"></i> Eligibility:</strong>
+            {{ course.eligibility|truncatewords:15 }}
+          </div>
+        </div>
+
+        <div class="border-top pt-3 mt-2">
+          <div class="d-flex justify-content-between align-items-center mb-3 text-secondary small">
+            <span><i class="bi bi-clock me-1"></i> {{ course.duration }}</span>
+            <span class="fw-bold text-dark fs-6">₹{{ course.fees|floatformat:0 }} / year</span>
+          </div>
+          
+          <div class="d-flex gap-2">
+            <a href="{% url 'courses:detail' course.id %}" class="btn btn-outline-custom w-50 py-2 small">
+              View Details
+            </a>
+            {% if user.is_authenticated and user.is_student %}
+              <a href="{% url 'admissions:apply' %}" class="btn btn-primary-custom w-50 py-2 small {% if not course.has_available_seats %}disabled{% endif %}">
+                Apply Now
+              </a>
+            {% else %}
+              <a href="{% url 'accounts:register' %}" class="btn btn-primary-custom w-50 py-2 small">
+                Apply Now
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <div class="col-12">
+      <div class="card-custom text-center py-5">
+        <i class="bi bi-journal-x display-4 text-muted mb-3 d-block"></i>
+        <h5 class="text-secondary">No Courses Found</h5>
+        <p class="small text-muted mb-0">Try clearing your search query or selecting a different department filter.</p>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

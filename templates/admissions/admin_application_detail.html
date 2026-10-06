@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Review Application: {{ application.application_id }} - Admin Portal{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+  <a href="{% url 'admissions:admin_manage' %}" class="btn btn-outline-custom py-1 px-3 small mb-2">
+    <i class="bi bi-arrow-left"></i> Back to Applications
+  </a>
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+    <div>
+      <div class="d-flex align-items-center gap-2 mb-1">
+        <h3 class="fw-bold mb-0" style="color: #0B3A6E;">Review Application #{{ application.application_id }}</h3>
+        <span class="badge-custom {{ application.status_badge_class }} fs-6">{{ application.status }}</span>
+      </div>
+      <p class="text-secondary mb-0">Candidate: <strong class="text-dark">{{ application.full_name }}</strong> | Course: <strong class="text-dark">{{ application.course.course_name }} ({{ application.course.course_code }})</strong></p>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <!-- Left Column: Applicant and Academic Details -->
+  <div class="col-lg-8">
+    
+    <!-- Candidate Info -->
+    <div class="card-custom mb-4">
+      <div class="card-custom-header">
+        <h5 class="card-title-custom"><i class="bi bi-person-lines-fill me-2"></i> Candidate Profile</h5>
+        <a href="{% url 'students:admin_student_detail' application.student.id %}" class="small text-decoration-none">View Full Student Account</a>
+      </div>
+      <div class="row g-3 small">
+        <div class="col-md-6"><strong>Candidate Name:</strong> <span class="text-secondary d-block">{{ application.full_name }}</span></div>
+        <div class="col-md-6"><strong>Email Address:</strong> <span class="text-secondary d-block">{{ application.email }}</span></div>
+        <div class="col-md-6"><strong>Phone Number:</strong> <span class="text-secondary d-block">{{ application.phone_number }}</span></div>
+        <div class="col-md-6"><strong>Date of Birth:</strong> <span class="text-secondary d-block">{{ application.date_of_birth|date:"M d, Y"|default:"N/A" }}</span></div>
+        <div class="col-md-6"><strong>Gender:</strong> <span class="text-secondary d-block">{{ application.gender|default:"N/A" }}</span></div>
+        <div class="col-md-6"><strong>Address:</strong> <span class="text-secondary d-block">{{ application.address|default:"N/A" }}</span></div>
+        <div class="col-md-6"><strong>Father's Name:</strong> <span class="text-secondary d-block">{{ application.father_name|default:"N/A" }}</span></div>
+        <div class="col-md-6"><strong>Mother's Name:</strong> <span class="text-secondary d-block">{{ application.mother_name|default:"N/A" }}</span></div>
+      </div>
+    </div>
+
+    <!-- Academic Information -->
+    <div class="card-custom mb-4">
+      <div class="card-custom-header">
+        <h5 class="card-title-custom"><i class="bi bi-mortarboard me-2"></i> Academic Merit</h5>
+      </div>
+      <div class="row g-3 small">
+        <div class="col-md-6"><strong>Previous Institution:</strong> <span class="text-secondary d-block">{{ application.previous_institution|default:"N/A" }}</span></div>
+        <div class="col-md-6"><strong>Qualifying Examination:</strong> <span class="text-secondary d-block">{{ application.qualification|default:"N/A" }}</span></div>
+        <div class="col-md-6"><strong>Board / University:</strong> <span class="text-secondary d-block">{{ application.board_university|default:"N/A" }}</span></div>
+        <div class="col-md-3"><strong>Passing Year:</strong> <span class="text-secondary d-block">{{ application.passing_year|default:"N/A" }}</span></div>
+        <div class="col-md-3"><strong>Percentage / CGPA:</strong> <span class="fw-bold text-success fs-6 d-block">{{ application.percentage_cgpa|default:"N/A" }}%</span></div>
+      </div>
+    </div>
+
+    <!-- Submitted Documents -->
+    <div class="card-custom mb-4">
+      <div class="card-custom-header">
+        <h5 class="card-title-custom"><i class="bi bi-folder2-open me-2"></i> Verification Documents</h5>
+        <span class="badge bg-light text-primary border">{{ documents.count }}</span>
+      </div>
+      <div class="table-custom-container border-0">
+        <table class="table-custom">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Filename</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for doc in documents %}
+              <tr>
+                <td class="fw-medium">{{ doc.get_document_type_display }}</td>
+                <td>{{ doc.file_name }}</td>
+                <td>
+                  <span class="badge-custom {% if doc.status == 'Verified' %}badge-approved{% elif doc.status == 'Rejected' %}badge-rejected{% else %}badge-warning{% endif %}">
+                    {{ doc.status }}
+                  </span>
+                </td>
+                <td>
+                  {% if doc.file %}
+                    <a href="{{ doc.file.url }}" target="_blank" class="btn btn-sm btn-outline-custom py-0 px-2 small">
+                      <i class="bi bi-eye"></i> View File
+                    </a>
+                  {% endif %}
+                </td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="4" class="text-center py-3 text-muted small">No documents attached.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Right Column: Admin Actions & Decision Panel -->
+  <div class="col-lg-4">
+    
+    <!-- Action Decision Card -->
+    <div class="card-custom mb-4 shadow-sm border-primary">
+      <div class="card-custom-header">
+        <h5 class="card-title-custom"><i class="bi bi-check2-square text-primary me-2"></i> Review Decisions</h5>
+      </div>
+
+      <form method="post">
+        {% csrf_token %}
+
+        <div class="mb-3">
+          <label class="form-label-custom">Admin Remarks / Notes</label>
+          <textarea name="admin_remarks" class="form-control-custom" rows="2" placeholder="Internal or candidate review remarks...">{{ application.admin_remarks|default:'' }}</textarea>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label-custom text-danger">Rejection Reason (Required if Rejecting)</label>
+          <textarea name="rejection_reason" class="form-control-custom" rows="2" placeholder="Specify why the application is rejected...">{{ application.rejection_reason|default:'' }}</textarea>
+        </div>
+
+        <div class="d-grid gap-2">
+          <button type="submit" name="action" value="approve" class="btn btn-success py-2 fw-semibold">
+            <i class="bi bi-check-circle"></i> Approve Admission
+          </button>
+
+          <button type="submit" name="action" value="doc_verify" class="btn btn-warning text-dark py-2 fw-medium">
+            <i class="bi bi-file-earmark-check"></i> Mark Documents Verified
+          </button>
+
+          <button type="submit" name="action" value="under_review" class="btn btn-outline-primary py-2 fw-medium">
+            <i class="bi bi-hourglass-split"></i> Mark Under Review
+          </button>
+
+          <button type="submit" name="action" value="reject" class="btn btn-outline-danger py-2 fw-medium" onclick="return confirm('Are you sure you want to reject this admission application?');">
+            <i class="bi bi-x-circle"></i> Reject Application
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Reviewer Info if already reviewed -->
+    {% if application.reviewed_by %}
+      <div class="card-custom mb-4 bg-light border-0 small">
+        <h6 class="fw-bold text-dark mb-2">Last Reviewed</h6>
+        <div><strong>Reviewed By:</strong> {{ application.reviewed_by.full_name }}</div>
+        <div><strong>Timestamp:</strong> {{ application.reviewed_at|date:"M d, Y H:i" }}</div>
+      </div>
+    {% endif %}
+
+    <!-- Timeline History -->
+    <div class="card-custom">
+      <div class="card-custom-header">
+        <h5 class="card-title-custom"><i class="bi bi-clock-history me-2"></i> Audit Trail</h5>
+      </div>
+      <div class="timeline-vertical py-2">
+        {% for item in timeline %}
+          <div class="timeline-item">
+            <div class="timeline-dot completed"><i class="bi bi-check"></i></div>
+            <div>
+              <div class="timeline-title">{{ item.title }}</div>
+              <div class="timeline-desc">{{ item.description }}</div>
+              <small class="text-muted" style="font-size: 0.72rem;">{{ item.created_at|date:"M d, Y H:i" }}</small>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ action_title }} - College Admission System{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+  <a href="{% url 'courses:manage' %}" class="btn btn-outline-custom py-1 px-3 small mb-2">
+    <i class="bi bi-arrow-left"></i> Back to Courses
+  </a>
+  <h3 class="fw-bold mb-1" style="color: #0B3A6E;">{{ action_title }}</h3>
+  <p class="text-secondary mb-0">Fill in program specifications, fees, seat allocation, and eligibility criteria</p>
+</div>
+
+<div class="row">
+  <div class="col-lg-8">
+    <div class="card-custom">
+      <form method="post" novalidate>
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger py-2 small mb-3">
+            {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+          </div>
+        {% endif %}
+
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label class="form-label-custom">Course Name <span class="text-danger">*</span></label>
+            {{ form.course_name }}
+            {% if form.course_name.errors %}<div class="text-danger small">{{ form.course_name.errors.0 }}</div>{% endif %}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label-custom">Course Code <span class="text-danger">*</span></label>
+            {{ form.course_code }}
+            {% if form.course_code.errors %}<div class="text-danger small">{{ form.course_code.errors.0 }}</div>{% endif %}
+          </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label class="form-label-custom">Department <span class="text-danger">*</span></label>
+            {{ form.department }}
+            {% if form.department.errors %}<div class="text-danger small">{{ form.department.errors.0 }}</div>{% endif %}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label-custom">Duration <span class="text-danger">*</span></label>
+            {{ form.duration }}
+            {% if form.duration.errors %}<div class="text-danger small">{{ form.duration.errors.0 }}</div>{% endif %}
+          </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-md-4">
+            <label class="form-label-custom">Total Seats <span class="text-danger">*</span></label>
+            {{ form.total_seats }}
+            {% if form.total_seats.errors %}<div class="text-danger small">{{ form.total_seats.errors.0 }}</div>{% endif %}
+          </div>
+          <div class="col-md-4">
+            <label class="form-label-custom">Available Seats <span class="text-danger">*</span></label>
+            {{ form.available_seats }}
+            {% if form.available_seats.errors %}<div class="text-danger small">{{ form.available_seats.errors.0 }}</div>{% endif %}
+          </div>
+          <div class="col-md-4">
+            <label class="form-label-custom">Annual Tuition Fee (₹) <span class="text-danger">*</span></label>
+            {{ form.fees }}
+            {% if form.fees.errors %}<div class="text-danger small">{{ form.fees.errors.0 }}</div>{% endif %}
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label-custom">Eligibility Criteria <span class="text-danger">*</span></label>
+          {{ form.eligibility }}
+          {% if form.eligibility.errors %}<div class="text-danger small">{{ form.eligibility.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label-custom">Program Description</label>
+          {{ form.description }}
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label-custom">Status</label>
+          {{ form.status }}
+        </div>
+
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-primary-custom py-2 px-4">
+            <i class="bi bi-check-lg"></i> {% if is_edit %}Save Updates{% else %}Create Course{% endif %}
+          </button>
+          <a href="{% url 'courses:manage' %}" class="btn btn-outline-custom py-2 px-3">Cancel</a>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="card-custom bg-light border-0">
+      <h6 class="fw-bold text-dark mb-2"><i class="bi bi-info-circle text-primary me-1"></i> Seat Allocation Rules</h6>
+      <ul class="small text-secondary ps-3 mb-0">
+        <li class="mb-2">Available seats will automatically reduce whenever an approved student confirms enrollment.</li>
+        <li class="mb-2">If available seats reaches 0, new applicants cannot select this course in the application wizard.</li>
+        <li>Deactivating a course preserves historical enrollment transcripts.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,359 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admission Application Form - College Admission System{% endblock %}
+
+{% block content %}
+<!-- Page Header matching Image 1 #7 -->
+<div class="mb-4">
+  <h3 class="fw-bold mb-1" style="color: #0B3A6E;">Admission Application Form</h3>
+  <p class="text-secondary mb-0">Fill in the details below to apply for admission.</p>
+</div>
+
+<!-- Multi-Step Stepper Navigation matching Image 1 #7 -->
+<div class="card-custom py-3 px-2 px-md-4 mb-4">
+  <div class="stepper-nav mb-0">
+    <!-- Step 1 -->
+    <div class="stepper-step {% if step == 1 %}active{% elif step > 1 %}completed{% endif %}">
+      <div class="stepper-circle">{% if step > 1 %}<i class="bi bi-check-lg"></i>{% else %}1{% endif %}</div>
+      <span class="stepper-label d-none d-sm-inline">Personal Details</span>
+    </div>
+
+    <div class="flex-grow-1 border-top mx-2 {% if step > 1 %}border-primary{% else %}border-light{% endif %}" style="height: 1px;"></div>
+
+    <!-- Step 2 -->
+    <div class="stepper-step {% if step == 2 %}active{% elif step > 2 %}completed{% endif %}">
+      <div class="stepper-circle">{% if step > 2 %}<i class="bi bi-check-lg"></i>{% else %}2{% endif %}</div>
+      <span class="stepper-label d-none d-sm-inline">Academic Details</span>
+    </div>
+
+    <div class="flex-grow-1 border-top mx-2 {% if step > 2 %}border-primary{% else %}border-light{% endif %}" style="height: 1px;"></div>
+
+    <!-- Step 3 -->
+    <div class="stepper-step {% if step == 3 %}active{% elif step > 3 %}completed{% endif %}">
+      <div class="stepper-circle">{% if step > 3 %}<i class="bi bi-check-lg"></i>{% else %}3{% endif %}</div>
+      <span class="stepper-label d-none d-sm-inline">Course Preference</span>
+    </div>
+
+    <div class="flex-grow-1 border-top mx-2 {% if step > 3 %}border-primary{% else %}border-light{% endif %}" style="height: 1px;"></div>
+
+    <!-- Step 4 -->
+    <div class="stepper-step {% if step == 4 %}active{% elif step > 4 %}completed{% endif %}">
+      <div class="stepper-circle">{% if step > 4 %}<i class="bi bi-check-lg"></i>{% else %}4{% endif %}</div>
+      <span class="stepper-label d-none d-sm-inline">Documents</span>
+    </div>
+
+    <div class="flex-grow-1 border-top mx-2 {% if step > 4 %}border-primary{% else %}border-light{% endif %}" style="height: 1px;"></div>
+
+    <!-- Step 5 -->
+    <div class="stepper-step {% if step == 5 %}active{% endif %}">
+      <div class="stepper-circle">5</div>
+      <span class="stepper-label d-none d-sm-inline">Review & Submit</span>
+    </div>
+  </div>
+</div>
+
+<!-- Step Form Card -->
+<div class="card-custom">
+  <form method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+
+    <!-- ================= STEP 1: PERSONAL DETAILS ================= -->
+    {% if step == 1 %}
+      <h5 class="fw-bold mb-3" style="color: #0B3A6E;">Personal Details</h5>
+      
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <label class="form-label-custom">Full Name <span class="text-danger">*</span></label>
+          {{ step1_form.full_name }}
+          {% if step1_form.full_name.errors %}<div class="text-danger small">{{ step1_form.full_name.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="col-md-6">
+          <label class="form-label-custom">Date of Birth <span class="text-danger">*</span></label>
+          {{ step1_form.date_of_birth }}
+          {% if step1_form.date_of_birth.errors %}<div class="text-danger small">{{ step1_form.date_of_birth.errors.0 }}</div>{% endif %}
+        </div>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <label class="form-label-custom">Gender <span class="text-danger">*</span></label>
+          {{ step1_form.gender }}
+          {% if step1_form.gender.errors %}<div class="text-danger small">{{ step1_form.gender.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="col-md-6">
+          <label class="form-label-custom">Email Address <span class="text-danger">*</span></label>
+          {{ step1_form.email }}
+          {% if step1_form.email.errors %}<div class="text-danger small">{{ step1_form.email.errors.0 }}</div>{% endif %}
+        </div>
+      </div>
+
+      <div class="row g-3 mb-4">
+        <div class="col-md-6">
+          <label class="form-label-custom">Phone Number <span class="text-danger">*</span></label>
+          {{ step1_form.phone_number }}
+          {% if step1_form.phone_number.errors %}<div class="text-danger small">{{ step1_form.phone_number.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="col-md-6">
+          <label class="form-label-custom">Address <span class="text-danger">*</span></label>
+          {{ step1_form.address }}
+          {% if step1_form.address.errors %}<div class="text-danger small">{{ step1_form.address.errors.0 }}</div>{% endif %}
+        </div>
+      </div>
+
+      <h5 class="fw-bold mb-3 pt-3 border-top" style="color: #0B3A6E;">Parent/Guardian Details</h5>
+      <div class="row g-3 mb-4">
+        <div class="col-md-4">
+          <label class="form-label-custom">Father's Name <span class="text-danger">*</span></label>
+          {{ step1_form.father_name }}
+          {% if step1_form.father_name.errors %}<div class="text-danger small">{{ step1_form.father_name.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="col-md-4">
+          <label class="form-label-custom">Mother's Name <span class="text-danger">*</span></label>
+          {{ step1_form.mother_name }}
+          {% if step1_form.mother_name.errors %}<div class="text-danger small">{{ step1_form.mother_name.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="col-md-4">
+          <label class="form-label-custom">Guardian Contact</label>
+          {{ step1_form.guardian_contact }}
+        </div>
+      </div>
+
+      <div class="text-end pt-3 border-top">
+        <button type="submit" class="btn btn-primary-custom px-4 py-2">
+          Next: Academic Details &rarr;
+        </button>
+      </div>
+
+    <!-- ================= STEP 2: ACADEMIC DETAILS ================= -->
+    {% elif step == 2 %}
+      <h5 class="fw-bold mb-3" style="color: #0B3A6E;">Academic Details</h5>
+      
+      <div class="mb-3">
+        <label class="form-label-custom">Previous School / College <span class="text-danger">*</span></label>
+        {{ step2_form.previous_institution }}
+        {% if step2_form.previous_institution.errors %}<div class="text-danger small">{{ step2_form.previous_institution.errors.0 }}</div>{% endif %}
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <label class="form-label-custom">Qualification / Degree <span class="text-danger">*</span></label>
+          {{ step2_form.qualification }}
+          {% if step2_form.qualification.errors %}<div class="text-danger small">{{ step2_form.qualification.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="col-md-6">
+          <label class="form-label-custom">Board / University <span class="text-danger">*</span></label>
+          {{ step2_form.board_university }}
+          {% if step2_form.board_university.errors %}<div class="text-danger small">{{ step2_form.board_university.errors.0 }}</div>{% endif %}
+        </div>
+      </div>
+
+      <div class="row g-3 mb-4">
+        <div class="col-md-6">
+          <label class="form-label-custom">Passing Year <span class="text-danger">*</span></label>
+          {{ step2_form.passing_year }}
+          {% if step2_form.passing_year.errors %}<div class="text-danger small">{{ step2_form.passing_year.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="col-md-6">
+          <label class="form-label-custom">Percentage / CGPA <span class="text-danger">*</span></label>
+          {{ step2_form.percentage_cgpa }}
+          {% if step2_form.percentage_cgpa.errors %}<div class="text-danger small">{{ step2_form.percentage_cgpa.errors.0 }}</div>{% endif %}
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-between pt-3 border-top">
+        <a href="?step=1" class="btn btn-outline-custom px-4 py-2">&larr; Previous</a>
+        <button type="submit" class="btn btn-primary-custom px-4 py-2">
+          Next: Course Preference &rarr;
+        </button>
+      </div>
+
+    <!-- ================= STEP 3: COURSE PREFERENCE ================= -->
+    {% elif step == 3 %}
+      <h5 class="fw-bold mb-3" style="color: #0B3A6E;">Course Preference</h5>
+      
+      <div class="mb-4">
+        <label class="form-label-custom">Select Preferred Course <span class="text-danger">*</span></label>
+        <select name="course" id="course_select" class="form-select-custom" required onchange="updateCoursePreview(this.value)">
+          <option value="">-- Choose Course --</option>
+          {% for c in courses %}
+            <option value="{{ c.id }}" {% if draft_app.course_id == c.id %}selected{% endif %}>
+              {{ c.course_name }} ({{ c.course_code }}) - Dept: {{ c.department }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Real-time dynamic course details preview card -->
+      <div id="course_preview_box" class="card p-3 mb-4 bg-light border rounded-3">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="fw-bold text-dark mb-0" id="preview_title">Selected Course Overview</h6>
+          <span class="badge badge-success" id="preview_seats">Available Seats</span>
+        </div>
+        <div class="row g-2 small text-secondary">
+          <div class="col-md-4"><strong>Department:</strong> <span id="preview_dept">-</span></div>
+          <div class="col-md-4"><strong>Duration:</strong> <span id="preview_dur">-</span></div>
+          <div class="col-md-4"><strong>Annual Fee:</strong> <span id="preview_fee" class="fw-bold text-primary">-</span></div>
+        </div>
+        <div class="mt-2 pt-2 border-top small">
+          <strong class="text-dark d-block">Eligibility:</strong>
+          <span id="preview_eligibility">Select a course above to check seat availability and eligibility.</span>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-between pt-3 border-top">
+        <a href="?step=2" class="btn btn-outline-custom px-4 py-2">&larr; Previous</a>
+        <button type="submit" class="btn btn-primary-custom px-4 py-2">
+          Next: Documents &rarr;
+        </button>
+      </div>
+
+    <!-- ================= STEP 4: DOCUMENTS UPLOAD ================= -->
+    {% elif step == 4 %}
+      <h5 class="fw-bold mb-3" style="color: #0B3A6E;">Required Document Uploads</h5>
+      <p class="text-secondary small mb-4">Upload scanned copies of required documents in PDF or JPG format (Max 5MB each).</p>
+
+      <div class="row g-4 mb-4">
+        <div class="col-md-4">
+          <div class="p-3 border rounded-3 bg-light text-center h-100 d-flex flex-column justify-content-between">
+            <div>
+              <i class="bi bi-person-bounding-box fs-2 text-primary mb-2 d-block"></i>
+              <strong class="d-block text-dark small mb-1">Passport Size Photo</strong>
+              <small class="text-muted d-block mb-3">Recent color photograph</small>
+            </div>
+            <input type="file" name="passport_photo" class="form-control-custom form-control-sm">
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="p-3 border rounded-3 bg-light text-center h-100 d-flex flex-column justify-content-between">
+            <div>
+              <i class="bi bi-card-heading fs-2 text-primary mb-2 d-block"></i>
+              <strong class="d-block text-dark small mb-1">Identity Proof</strong>
+              <small class="text-muted d-block mb-3">Aadhaar Card / Passport / Voter ID</small>
+            </div>
+            <input type="file" name="id_proof" class="form-control-custom form-control-sm">
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="p-3 border rounded-3 bg-light text-center h-100 d-flex flex-column justify-content-between">
+            <div>
+              <i class="bi bi-file-earmark-ruled fs-2 text-primary mb-2 d-block"></i>
+              <strong class="d-block text-dark small mb-1">Academic Marksheet</strong>
+              <small class="text-muted d-block mb-3">10th / 12th Qualifying Marksheet</small>
+            </div>
+            <input type="file" name="marksheet" class="form-control-custom form-control-sm">
+          </div>
+        </div>
+      </div>
+
+      {% if uploaded_docs %}
+        <div class="mb-4">
+          <h6 class="fw-bold small text-dark mb-2">Previously Attached Files for this Application:</h6>
+          <ul class="list-group list-group-flush small">
+            {% for doc in uploaded_docs %}
+              <li class="list-group-item d-flex justify-content-between align-items-center bg-light px-3 py-2 rounded mb-1">
+                <span><i class="bi bi-paperclip me-1 text-primary"></i> {{ doc.get_document_type_display }}: {{ doc.file_name }}</span>
+                <span class="badge bg-success">Attached</span>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+
+      <div class="d-flex justify-content-between pt-3 border-top">
+        <a href="?step=3" class="btn btn-outline-custom px-4 py-2">&larr; Previous</a>
+        <button type="submit" class="btn btn-primary-custom px-4 py-2">
+          Next: Review & Submit &rarr;
+        </button>
+      </div>
+
+    <!-- ================= STEP 5: REVIEW & SUBMIT ================= -->
+    {% elif step == 5 %}
+      <h5 class="fw-bold mb-3" style="color: #0B3A6E;">Review & Submit Application</h5>
+      <p class="text-secondary small mb-4">Please verify all information carefully before final submission.</p>
+
+      <div class="row g-4 mb-4">
+        <!-- Personal Summary -->
+        <div class="col-md-6">
+          <div class="p-3 rounded-3 bg-light border h-100">
+            <h6 class="fw-bold text-dark border-bottom pb-2 mb-2"><i class="bi bi-person me-1"></i> Personal Information</h6>
+            <div class="small">
+              <div><strong>Name:</strong> {{ draft_app.full_name }}</div>
+              <div><strong>Email:</strong> {{ draft_app.email }}</div>
+              <div><strong>Phone:</strong> {{ draft_app.phone_number }}</div>
+              <div><strong>Date of Birth:</strong> {{ draft_app.date_of_birth }}</div>
+              <div><strong>Gender:</strong> {{ draft_app.gender }}</div>
+              <div><strong>Address:</strong> {{ draft_app.address }}</div>
+              <div><strong>Parents:</strong> Father: {{ draft_app.father_name }}, Mother: {{ draft_app.mother_name }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Academic & Course Summary -->
+        <div class="col-md-6">
+          <div class="p-3 rounded-3 bg-light border h-100">
+            <h6 class="fw-bold text-dark border-bottom pb-2 mb-2"><i class="bi bi-book me-1"></i> Course & Academic Record</h6>
+            <div class="small">
+              <div><strong>Target Course:</strong> <span class="badge bg-primary fs-6">{{ draft_app.course.course_name }} ({{ draft_app.course.course_code }})</span></div>
+              <div><strong>Department:</strong> {{ draft_app.course.department }}</div>
+              <div><strong>Annual Tuition:</strong> ₹{{ draft_app.course.fees|floatformat:0 }}</div>
+              <hr class="my-2">
+              <div><strong>School / College:</strong> {{ draft_app.previous_institution }}</div>
+              <div><strong>Qualification:</strong> {{ draft_app.qualification }}</div>
+              <div><strong>Board / University:</strong> {{ draft_app.board_university }}</div>
+              <div><strong>Percentage / CGPA:</strong> <strong class="text-success">{{ draft_app.percentage_cgpa }}%</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-3 rounded-3 bg-info bg-opacity-10 border border-info mb-4 small text-dark">
+        <i class="bi bi-info-circle-fill text-info me-1"></i> By submitting this application, you certify that all information submitted is true and complete to the best of your knowledge. An application ID will be generated upon submission.
+      </div>
+
+      <div class="d-flex justify-content-between pt-3 border-top">
+        <a href="?step=4" class="btn btn-outline-custom px-4 py-2">&larr; Previous</a>
+        <div class="d-flex gap-2">
+          <button type="submit" name="action" value="save_draft" class="btn btn-outline-secondary px-3 py-2">
+            <i class="bi bi-bookmark"></i> Save Draft
+          </button>
+          <button type="submit" name="action" value="submit" class="btn btn-primary-custom px-4 py-2">
+            <i class="bi bi-send-check"></i> Submit Application
+          </button>
+        </div>
+      </div>
+
+    {% endif %}
+
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function updateCoursePreview(courseId) {
+    if (!courseId) return;
+    fetch(`/courses/api/${courseId}/info/`)
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('preview_title').innerText = `${data.course_name} (${data.course_code})`;
+        document.getElementById('preview_dept').innerText = data.department;
+        document.getElementById('preview_dur').innerText = data.duration;
+        document.getElementById('preview_fee').innerText = `₹${data.fees.toLocaleString()}/yr`;
+        document.getElementById('preview_seats').innerText = `${data.available_seats} Seats Available`;
+        document.getElementById('preview_eligibility').innerText = data.eligibility;
+      })
+      .catch(err => console.error(err));
+  }
+
+  // Pre-load on step 3 if selected
+  document.addEventListener('DOMContentLoaded', function() {
+    const sel = document.getElementById('course_select');
+    if (sel && sel.value) {
+      updateCoursePreview(sel.value);
+    }
+  });
+</script>
+{% endblock %}

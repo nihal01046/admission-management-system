@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enrollment Letter - {{ application.full_name }} ({{ enrollment.roll_number }})</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <style>
+    body {
+      font-family: 'Inter', serif, sans-serif;
+      color: #1e293b;
+      background-color: #f1f5f9;
+      margin: 0;
+      padding: 40px 20px;
+    }
+    .letter-container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 60px 50px;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      position: relative;
+    }
+    .letterhead {
+      text-align: center;
+      border-bottom: 2px solid #0B3A6E;
+      padding-bottom: 20px;
+      margin-bottom: 30px;
+    }
+    .college-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #0B3A6E;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin: 0 0 5px 0;
+    }
+    .college-sub {
+      font-size: 13px;
+      color: #64748b;
+      margin: 0;
+    }
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      margin-bottom: 25px;
+      color: #475569;
+    }
+    .subject-line {
+      font-size: 15px;
+      font-weight: 700;
+      color: #0B3A6E;
+      background-color: #f8fafc;
+      padding: 10px 15px;
+      border-left: 4px solid #1677FF;
+      margin-bottom: 25px;
+    }
+    .body-p {
+      font-size: 14px;
+      line-height: 1.65;
+      color: #334155;
+      margin-bottom: 18px;
+    }
+    .details-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 25px 0;
+      font-size: 13px;
+    }
+    .details-table th, .details-table td {
+      padding: 10px 14px;
+      border: 1px solid #cbd5e1;
+      text-align: left;
+    }
+    .details-table th {
+      background-color: #f8fafc;
+      color: #0B3A6E;
+      font-weight: 600;
+      width: 35%;
+    }
+    .signatures {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 60px;
+      padding-top: 20px;
+    }
+    .sig-box {
+      text-align: center;
+      width: 200px;
+    }
+    .sig-line {
+      border-top: 1px solid #94a3b8;
+      margin-top: 40px;
+      padding-top: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #1e293b;
+    }
+    .seal-box {
+      border: 2px dashed #0B3A6E;
+      border-radius: 50%;
+      width: 90px;
+      height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 10px auto;
+      color: #0B3A6E;
+      font-size: 10px;
+      text-align: center;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 5px;
+    }
+    .print-bar {
+      max-width: 800px;
+      margin: 0 auto 20px auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .btn-print {
+      background: #1677FF;
+      color: #ffffff;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 14px;
+    }
+    @media print {
+      body {
+        background: transparent;
+        padding: 0;
+      }
+      .print-bar {
+        display: none;
+      }
+      .letter-container {
+        box-shadow: none;
+        padding: 40px 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="print-bar">
+    <a href="{% url 'enrollments:confirmation' application.application_id %}" style="text-decoration: none; color: #0B3A6E; font-size: 14px;">
+      &larr; Return to Portal
+    </a>
+    <button onclick="window.print()" class="btn-print">
+      <i class="bi bi-printer"></i> Print / Save as PDF
+    </button>
+  </div>
+
+  <div class="letter-container">
+    <div class="letterhead">
+      <h1 class="college-title">College of Science, Technology & Arts</h1>
+      <p class="college-sub">Affiliated to State Central University | Approved by Higher Education Council</p>
+      <p class="college-sub">Admissions Directorate & Enrollment Secretariat | Campus Avenue, New Delhi - 110001</p>
+    </div>
+
+    <div class="meta-row">
+      <div>
+        <strong>Ref No:</strong> ADM/{{ enrollment.academic_year }}/{{ enrollment.enrollment_id }}<br>
+        <strong>Date:</strong> {{ today|date:"F d, Y" }}
+      </div>
+      <div style="text-align: right;">
+        <strong>Application ID:</strong> {{ application.application_id }}<br>
+        <strong>Academic Session:</strong> {{ enrollment.academic_year }}
+      </div>
+    </div>
+
+    <div class="subject-line">
+      SUBJECT: OFFICIAL PROVISIONAL ADMISSION & ENROLLMENT CONFIRMATION LETTER
+    </div>
+
+    <p class="body-p">
+      Dear <strong>{{ application.full_name }}</strong>,
+    </p>
+
+    <p class="body-p">
+      We are pleased to inform you that upon successful verification of your submitted academic credentials and fulfillment of program eligibility criteria, you have been formally granted admission to the undergraduate program at our college.
+    </p>
+
+    <p class="body-p">
+      Your enrollment has been registered into the college central academic registry with the following official credentials:
+    </p>
+
+    <table class="details-table">
+      <tbody>
+        <tr>
+          <th>Candidate Full Name</th>
+          <td><strong>{{ application.full_name }}</strong></td>
+        </tr>
+        <tr>
+          <th>Allocated Roll Number</th>
+          <td><strong style="color: #0B3A6E; font-size: 15px;">{{ enrollment.roll_number }}</strong></td>
+        </tr>
+        <tr>
+          <th>Enrollment ID</th>
+          <td>{{ enrollment.enrollment_id }}</td>
+        </tr>
+        <tr>
+          <th>Program / Course</th>
+          <td><strong>{{ course.course_name }} ({{ course.course_code }})</strong></td>
+        </tr>
+        <tr>
+          <th>Department</th>
+          <td>Department of {{ course.department }}</td>
+        </tr>
+        <tr>
+          <th>Program Duration</th>
+          <td>{{ course.duration }}</td>
+        </tr>
+        <tr>
+          <th>Date of Confirmation</th>
+          <td>{{ enrollment.enrollment_date|date:"F d, Y" }}</td>
+        </tr>
+        <tr>
+          <th>Admission Status</th>
+          <td><span style="color: #059669; font-weight: 700;">CONFIRMED & REGISTERED</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="body-p">
+      Please present this letter during the department orientation and document physical verification desk on the campus opening date. We wish you an enriching and successful academic journey.
+    </p>
+
+    <div class="signatures">
+      <div class="sig-box">
+        <div class="seal-box">
+          Official<br>Seal of<br>Admissions
+        </div>
+        <small style="color: #64748b;">Verification Directorate</small>
+      </div>
+
+      <div class="sig-box">
+        <div class="sig-line">
+          Dean of Admissions
+        </div>
+        <small style="color: #64748b;">Admissions Committee</small>
+      </div>
+
+      <div class="sig-box">
+        <div class="sig-line">
+          College Registrar
+        </div>
+        <small style="color: #64748b;">Academic Registry</small>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

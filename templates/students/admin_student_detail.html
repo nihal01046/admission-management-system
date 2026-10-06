@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Student Details: {{ student_user.full_name }} - College Admission System{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+  <a href="{% url 'students:manage' %}" class="btn btn-outline-custom py-1 px-3 small mb-2">
+    <i class="bi bi-arrow-left"></i> Back to Student List
+  </a>
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+    <div>
+      <h3 class="fw-bold mb-1" style="color: #0B3A6E;">{{ student_user.full_name }}</h3>
+      <p class="text-secondary mb-0">Student ID: <strong class="text-dark">{{ profile.student_id }}</strong> | Joined: {{ student_user.date_joined|date:"M d, Y" }}</p>
+    </div>
+    
+    <form method="post" class="d-inline">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="toggle_active">
+      {% if student_user.is_active %}
+        <button type="submit" class="btn btn-outline-danger py-2 px-3 small" onclick="return confirm('Are you sure you want to deactivate this student account?');">
+          <i class="bi bi-person-x"></i> Deactivate Account
+        </button>
+      {% else %}
+        <button type="submit" class="btn btn-success py-2 px-3 small">
+          <i class="bi bi-person-check"></i> Activate Account
+        </button>
+      {% endif %}
+    </form>
+  </div>
+</div>
+
+<div class="row g-4 mb-4">
+  <!-- Personal & Academic Details -->
+  <div class="col-lg-6">
+    <div class="card-custom mb-4">
+      <div class="card-custom-header">
+        <h5 class="card-title-custom"><i class="bi bi-person-badge me-2"></i> Personal & Guardian Information</h5>
+      </div>
+      <table class="table table-borderless small mb-0">
+        <tbody>
+          <tr><th class="text-secondary ps-0" style="width: 35%;">Email:</th><td class="fw-medium">{{ student_user.email }}</td></tr>
+          <tr><th class="text-secondary ps-0">Phone:</th><td class="fw-medium">{{ student_user.phone_number|default:"N/A" }}</td></tr>
+          <tr><th class="text-secondary ps-0">Date of Birth:</th><td>{{ profile.date_of_birth|date:"M d, Y"|default:"N/A" }}</td></tr>
+          <tr><th class="text-secondary ps-0">Gender:</th><td>{{ profile.gender|default:"N/A" }}</td></tr>
+          <tr><th class="text-secondary ps-0">Father's Name:</th><td>{{ profile.father_name|default:"N/A" }}</td></tr>
+          <tr><th class="text-secondary ps-0">Mother's Name:</th><td>{{ profile.mother_name|default:"N/A" }}</td></tr>
+          <tr><th class="text-secondary ps-0">Guardian Contact:</th><td>{{ profile.guardian_contact|default:"N/A" }}</td></tr>
+          <tr><th class="text-secondary ps-0">Address:</th><td>{{ profile.address|default:"N/A" }}, {{ profile.city }} {{ profile.state }} {{ profile.pincode }}</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card-custom">
+      <div class="card-custom-header">
+        <h5 class="card-title-custom"><i class="bi bi-mortarboard me-2"></i> Academic Credentials</h5>
+      </div>
+      <table class="table table-borderless small mb-0">
+        <tbody>
+          <tr><th class="text-secondary ps-0" style="width: 35%;">Previous School:</th><td class="fw-medium">{{ profile.previous_institution|default:"N/A" }}</td></tr>
+          <tr><th class="text-secondary ps-0">Qualification:</th><td>{{ profile.qualification|default:"N/A" }}</td></tr>
+          <tr><th class="text-secondary ps-0">Board / University:</th><td>{{ profile.board_university|default:"N/A" }}</td></tr>
+          <tr><th class="text-secondary ps-0">Passing Year:</th><td>{{ profile.passing_year|default:"N/A" }}</td></tr>
+          <tr><th class="text-secondary ps-0">Percentage / CGPA:</th><td class="fw-bold text-primary fs-6">{{ profile.percentage_cgpa|default:"N/A" }}%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Applications & Enrollments Records -->
+  <div class="col-lg-6">
+    <!-- Applications History -->
+    <div class="card-custom mb-4">
+      <div class="card-custom-header">
+        <h5 class="card-title-custom"><i class="bi bi-journal-text me-2"></i> Applications Submitted</h5>
+        <span class="badge bg-light text-primary border">{{ applications.count }}</span>
+      </div>
+
+      <div class="table-custom-container border-0">
+        <table class="table-custom">
+          <thead>
+            <tr>
+              <th>App ID</th>
+              <th>Course</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for app in applications %}
+              <tr>
+                <td class="fw-semibold">{{ app.application_id }}</td>
+                <td>{{ app.course.course_code }}</td>
+                <td>
+                  <span class="badge-custom {{ app.status_badge_class }}">{{ app.status }}</span>
+                </td>
+                <td>
+                  <a href="{% url 'admissions:admin_detail' app.application_id %}" class="btn btn-sm btn-outline-custom py-0 px-2 small">
+                    Review
+                  </a>
+                </td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="4" class="text-center py-3 text-muted small">No applications filed yet.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Enrollments Record -->
+    <div class="card-custom">
+      <div class="card-custom-header">
+        <h5 class="card-title-custom"><i class="bi bi-award me-2"></i> Confirmed Enrollments</h5>
+        <span class="badge bg-light text-success border">{{ enrollments.count }}</span>
+      </div>
+
+      <div class="table-custom-container border-0">
+        <table class="table-custom">
+          <thead>
+            <tr>
+              <th>Enrollment ID</th>
+              <th>Course</th>
+              <th>Roll Number</th>
+              <th>Year</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for enr in enrollments %}
+              <tr>
+                <td class="fw-semibold text-primary">{{ enr.enrollment_id }}</td>
+                <td>{{ enr.course.course_name }}</td>
+                <td><span class="badge bg-light text-dark border">{{ enr.roll_number }}</span></td>
+                <td>{{ enr.academic_year }}</td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="4" class="text-center py-3 text-muted small">No confirmed enrollments yet.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

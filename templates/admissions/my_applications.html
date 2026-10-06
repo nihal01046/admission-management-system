@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Applications - College Admission System{% endblock %}
+
+{% block content %}
+<div class="mb-4 d-flex flex-wrap justify-content-between align-items-center gap-3">
+  <div>
+    <h3 class="fw-bold mb-1" style="color: #0B3A6E;">My Applications</h3>
+    <p class="text-secondary mb-0">Track the status of your submitted college admission applications</p>
+  </div>
+  <a href="{% url 'admissions:apply' %}" class="btn btn-primary-custom px-3 py-2">
+    <i class="bi bi-plus-lg"></i> Apply for Another Course
+  </a>
+</div>
+
+<div class="card-custom p-0 overflow-hidden">
+  <div class="table-custom-container border-0">
+    <table class="table-custom">
+      <thead>
+        <tr>
+          <th>Application ID</th>
+          <th>Course</th>
+          <th>Department</th>
+          <th>Submission Date</th>
+          <th>Status</th>
+          <th class="text-center">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for app in applications %}
+          <tr>
+            <td class="fw-bold">
+              <a href="{% url 'admissions:application_detail' app.application_id %}" class="text-dark text-decoration-none">
+                {{ app.application_id }}
+              </a>
+            </td>
+            <td>
+              <span class="fw-semibold text-dark">{{ app.course.course_name }}</span>
+              <span class="badge bg-light text-primary border ms-1 small">{{ app.course.course_code }}</span>
+            </td>
+            <td>{{ app.course.department }}</td>
+            <td class="text-secondary small">{{ app.submitted_at|date:"M d, Y"|default:app.created_at|date:"M d, Y" }}</td>
+            <td>
+              <span class="badge-custom {{ app.status_badge_class }}">{{ app.status }}</span>
+            </td>
+            <td class="text-center">
+              <div class="d-inline-flex gap-2">
+                <a href="{% url 'admissions:application_detail' app.application_id %}" class="btn btn-sm btn-outline-custom py-1 px-3">
+                  <i class="bi bi-eye"></i> View Details
+                </a>
+                {% if app.status == 'Approved' and not app.is_enrolled %}
+                  <a href="{% url 'enrollments:enroll_student' app.application_id %}" class="btn btn-sm btn-primary-custom py-1 px-3">
+                    <i class="bi bi-check-circle"></i> Enroll
+                  </a>
+                {% elif app.is_enrolled %}
+                  <a href="{% url 'enrollments:confirmation' app.application_id %}" class="btn btn-sm btn-outline-success py-1 px-3">
+                    <i class="bi bi-award"></i> Enrollment
+                  </a>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="6" class="text-center py-5">
+              <i class="bi bi-journal-plus display-4 text-muted mb-3 d-block"></i>
+              <h5 class="text-secondary">No Applications Submitted</h5>
+              <p class="small text-muted mb-3">You have not submitted any admission applications yet.</p>
+              <a href="{% url 'admissions:apply' %}" class="btn btn-primary-custom px-4 py-2">
+                Start Your First Application
+              </a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

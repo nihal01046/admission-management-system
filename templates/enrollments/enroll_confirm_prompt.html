@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Confirm Enrollment - College Admission System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="card-custom p-4 p-md-5 text-center">
+      <div class="stat-icon stat-icon-green rounded-circle mx-auto mb-3" style="width: 64px; height: 64px; font-size: 1.8rem;">
+        <i class="bi bi-award"></i>
+      </div>
+
+      <h3 class="fw-bold text-dark mb-2">Confirm Your Admission Enrollment</h3>
+      <p class="text-secondary small mb-4">
+        You are about to accept the admission offer and officially enroll in <strong>{{ course.course_name }}</strong>.
+      </p>
+
+      <div class="p-3 rounded-3 bg-light border text-start small mb-4">
+        <div class="d-flex justify-content-between py-1 border-bottom">
+          <span class="text-secondary">Application ID:</span>
+          <strong class="text-primary">{{ application.application_id }}</strong>
+        </div>
+        <div class="d-flex justify-content-between py-1 border-bottom">
+          <span class="text-secondary">Selected Course:</span>
+          <strong class="text-dark">{{ course.course_name }} ({{ course.course_code }})</strong>
+        </div>
+        <div class="d-flex justify-content-between py-1 border-bottom">
+          <span class="text-secondary">Department:</span>
+          <span>{{ course.department }}</span>
+        </div>
+        <div class="d-flex justify-content-between py-1 border-bottom">
+          <span class="text-secondary">Academic Session:</span>
+          <span>2025-2026</span>
+        </div>
+        <div class="d-flex justify-content-between py-1">
+          <span class="text-secondary">Available Seats Remaining:</span>
+          <span class="text-success fw-bold">{{ course.available_seats }}</span>
+        </div>
+      </div>
+
+      <form method="post">
+        {% csrf_token %}
+        <div class="d-flex justify-content-center gap-3">
+          <a href="{% url 'admissions:application_detail' application.application_id %}" class="btn btn-outline-custom px-4 py-2">
+            Back
+          </a>
+          <button type="submit" class="btn btn-primary-custom px-4 py-2 fs-6">
+            <i class="bi bi-check-circle"></i> Confirm & Finalize Enrollment
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

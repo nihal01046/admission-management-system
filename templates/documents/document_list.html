@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Documents - College Admission System{% endblock %}
+
+{% block content %}
+<div class="mb-4 d-flex justify-content-between align-items-center">
+  <div>
+    <h3 class="fw-bold mb-1" style="color: #0B3A6E;">My Documents</h3>
+    <p class="text-secondary mb-0">Upload and manage identity proofs, certificates, and academic marksheets</p>
+  </div>
+</div>
+
+<div class="row g-4">
+  <!-- Upload Form Column -->
+  <div class="col-lg-4">
+    <div class="card-custom">
+      <div class="card-custom-header">
+        <h5 class="card-title-custom"><i class="bi bi-cloud-arrow-up me-2"></i> Upload Document</h5>
+      </div>
+
+      <form method="post" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger py-2 small mb-3">
+            {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+          </div>
+        {% endif %}
+
+        <div class="mb-3">
+          <label class="form-label-custom">Document Type <span class="text-danger">*</span></label>
+          {{ form.document_type }}
+          {% if form.document_type.errors %}<div class="text-danger small">{{ form.document_type.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label-custom">Document Title / Note</label>
+          {{ form.title }}
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label-custom">Choose File <span class="text-danger">*</span></label>
+          {{ form.file }}
+          <small class="text-muted d-block mt-1">Allowed: PDF, JPG, PNG (Max 5MB)</small>
+          {% if form.file.errors %}<div class="text-danger small">{{ form.file.errors.0 }}</div>{% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-primary-custom w-100 py-2">
+          <i class="bi bi-upload"></i> Upload Document
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Documents Table Column -->
+  <div class="col-lg-8">
+    <div class="card-custom p-0 overflow-hidden">
+      <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+        <h5 class="card-title-custom mb-0">Submitted Documents</h5>
+        <span class="badge bg-light text-primary border">{{ documents.count }} Total</span>
+      </div>
+
+      <div class="table-custom-container border-0">
+        <table class="table-custom">
+          <thead>
+            <tr>
+              <th>Document Type</th>
+              <th>Filename</th>
+              <th>Size</th>
+              <th>Status</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for doc in documents %}
+              <tr>
+                <td>
+                  <div class="fw-semibold text-dark">{{ doc.get_document_type_display }}</div>
+                  {% if doc.title %}<small class="text-muted">{{ doc.title }}</small>{% endif %}
+                </td>
+                <td>
+                  <span class="text-truncate d-inline-block" style="max-width: 150px;">{{ doc.file_name }}</span>
+                </td>
+                <td class="text-secondary small">{{ doc.file_size }}</td>
+                <td>
+                  {% if doc.status == 'Verified' %}
+                    <span class="badge-custom badge-approved">Verified</span>
+                  {% elif doc.status == 'Rejected' %}
+                    <span class="badge-custom badge-rejected" title="{{ doc.rejection_reason }}">Rejected</span>
+                  {% else %}
+                    <span class="badge-custom badge-warning">Pending</span>
+                  {% endif %}
+                </td>
+                <td class="text-center">
+                  <div class="d-inline-flex gap-2">
+                    {% if doc.file %}
+                      <a href="{{ doc.file.url }}" target="_blank" class="btn btn-sm btn-outline-custom py-1 px-2" title="View Document">
+                        <i class="bi bi-eye"></i>
+                      </a>
+                    {% endif %}
+                    {% if doc.status != 'Verified' %}
+                      <a href="{% url 'documents:delete' doc.id %}" class="btn btn-sm btn-outline-danger py-1 px-2" title="Delete" onclick="return confirm('Delete this pending document?');">
+                        <i class="bi bi-trash"></i>
+                      </a>
+                    {% endif %}
+                  </div>
+                </td>
+              </tr>
+              {% if doc.status == 'Rejected' and doc.rejection_reason %}
+                <tr class="bg-light">
+                  <td colspan="5" class="py-2 text-danger small ps-4">
+                    <i class="bi bi-exclamation-circle me-1"></i> <strong>Rejection Reason:</strong> {{ doc.rejection_reason }}
+                  </td>
+                </tr>
+              {% endif %}
+            {% empty %}
+              <tr>
+                <td colspan="5" class="text-center py-5 text-muted">
+                  No documents uploaded yet. Use the upload form on the left to add your identity proofs and academic marksheets.
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Deactivate Course - {{ course.course_name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-7 col-lg-6">
+    <div class="card-custom text-center p-4 p-md-5">
+      <div class="rounded-circle bg-danger bg-opacity-10 text-danger d-inline-flex align-items-center justify-content-center p-3 mb-3 mx-auto" style="width: 72px; height: 72px;">
+        <i class="bi bi-exclamation-triangle-fill fs-2"></i>
+      </div>
+      
+      <h4 class="fw-bold text-dark mb-2">Manage Course: {{ course.course_name }}</h4>
+      <p class="text-secondary small mb-4">
+        Choose whether to toggle the course active status or permanently delete it.
+      </p>
+
+      <div class="p-3 bg-light rounded-3 text-start small mb-4 border">
+        <div><strong>Code:</strong> {{ course.course_code }}</div>
+        <div><strong>Department:</strong> {{ course.department }}</div>
+        <div><strong>Current Status:</strong> <span class="badge {% if course.status == 'Active' %}bg-success{% else %}bg-secondary{% endif %}">{{ course.status }}</span></div>
+        <div><strong>Associated Applications:</strong> {{ course.applications.count }}</div>
+        <div><strong>Enrolled Students:</strong> {{ course.enrollments.count }}</div>
+      </div>
+
+      <form method="post" class="d-flex flex-column gap-2">
+        {% csrf_token %}
+        <button type="submit" name="action" value="toggle" class="btn btn-warning text-dark py-2 fw-semibold">
+          <i class="bi bi-power"></i> Toggle Status to {% if course.status == 'Active' %}Inactive{% else %}Active{% endif %}
+        </button>
+
+        <button type="submit" name="action" value="delete" class="btn btn-danger py-2" onclick="return confirm('Permanently delete this course? (Note: If students are linked, it will be deactivated instead)');">
+          <i class="bi bi-trash"></i> Delete Course
+        </button>
+
+        <a href="{% url 'courses:manage' %}" class="btn btn-outline-custom py-2 mt-2">Cancel</a>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Student Registration - College Admission System{% endblock %}
+
+{% block public_header_link %}
+  <a href="{% url 'accounts:login' %}" class="text-white text-decoration-none small fw-medium">Already have an account? <span class="fw-bold text-decoration-underline">Login</span></a>
+{% endblock %}
+
+{% block public_content %}
+<div class="auth-wrapper">
+  <div class="auth-container">
+    
+    <!-- Left Hero Column -->
+    <div class="auth-sidebar">
+      <div>
+        <div class="mb-4">
+          <span class="badge bg-primary px-3 py-2 rounded-pill small fw-semibold">STUDENT PORTAL</span>
+        </div>
+        <h1 class="display-6 fw-bold mb-3 text-white" style="letter-spacing: -0.02em;">Your Future Starts Here</h1>
+        <p class="text-light opacity-90 fs-6 mb-4">
+          Apply, Enroll and Build Your Career with Us
+        </p>
+
+        <ul class="auth-feature-list">
+          <li class="auth-feature-item">
+            <div class="auth-feature-icon">
+              <i class="bi bi-calendar3"></i>
+            </div>
+            <div>
+              <div class="fw-semibold text-white">Easy Online Application</div>
+              <small class="text-light opacity-75">Streamlined forms with instant draft saves</small>
+            </div>
+          </li>
+          <li class="auth-feature-item">
+            <div class="auth-feature-icon">
+              <i class="bi bi-shield-check"></i>
+            </div>
+            <div>
+              <div class="fw-semibold text-white">Secure & Reliable</div>
+              <small class="text-light opacity-75">Authenticated document vault and tracking</small>
+            </div>
+          </li>
+          <li class="auth-feature-item">
+            <div class="auth-feature-icon">
+              <i class="bi bi-mortarboard"></i>
+            </div>
+            <div>
+              <div class="fw-semibold text-white">Get Your Admission Status in Real Time</div>
+              <small class="text-light opacity-75">Immediate alerts upon document verification</small>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="text-light opacity-75 small pt-3 border-top border-white border-opacity-10">
+        College Admission & Enrollment System &copy; 2025
+      </div>
+    </div>
+
+    <!-- Right Registration Form Column -->
+    <div class="auth-form-card">
+      <div class="mb-4">
+        <h3 class="fw-bold mb-1" style="color: #0B3A6E;">Student Registration</h3>
+        <p class="text-secondary small">Create your account to get started</p>
+      </div>
+
+      <form method="post" action="{% url 'accounts:register' %}" novalidate>
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger py-2 small mb-3">
+            {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+          </div>
+        {% endif %}
+
+        <!-- Full Name -->
+        <div class="mb-3">
+          <label class="form-label-custom" for="reg_full_name">Full Name <span class="text-danger">*</span></label>
+          <div class="input-icon-group">
+            <i class="bi bi-person"></i>
+            {{ form.full_name }}
+          </div>
+          {% if form.full_name.errors %}
+            <div class="text-danger small mt-1">{{ form.full_name.errors.0 }}</div>
+          {% endif %}
+        </div>
+
+        <!-- Email Address -->
+        <div class="mb-3">
+          <label class="form-label-custom" for="reg_email">Email Address <span class="text-danger">*</span></label>
+          <div class="input-icon-group">
+            <i class="bi bi-envelope"></i>
+            {{ form.email }}
+          </div>
+          {% if form.email.errors %}
+            <div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>
+          {% endif %}
+        </div>
+
+        <!-- Phone Number -->
+        <div class="mb-3">
+          <label class="form-label-custom" for="reg_phone">Phone Number <span class="text-danger">*</span></label>
+          <div class="input-icon-group">
+            <i class="bi bi-telephone"></i>
+            {{ form.phone_number }}
+          </div>
+          {% if form.phone_number.errors %}
+            <div class="text-danger small mt-1">{{ form.phone_number.errors.0 }}</div>
+          {% endif %}
+        </div>
+
+        <!-- Password -->
+        <div class="mb-3">
+          <label class="form-label-custom" for="reg_password">Password <span class="text-danger">*</span></label>
+          <div class="input-icon-group">
+            <i class="bi bi-lock"></i>
+            {{ form.password }}
+            <i class="bi bi-eye toggle-password" data-target="reg_password"></i>
+          </div>
+          {% if form.password.errors %}
+            <div class="text-danger small mt-1">{{ form.password.errors.0 }}</div>
+          {% endif %}
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="mb-4">
+          <label class="form-label-custom" for="reg_confirm_password">Confirm Password <span class="text-danger">*</span></label>
+          <div class="input-icon-group">
+            <i class="bi bi-lock-fill"></i>
+            {{ form.confirm_password }}
+            <i class="bi bi-eye toggle-password" data-target="reg_confirm_password"></i>
+          </div>
+          {% if form.confirm_password.errors %}
+            <div class="text-danger small mt-1">{{ form.confirm_password.errors.0 }}</div>
+          {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-primary-custom w-100 py-2 fs-6 mb-3">
+          Register
+        </button>
+
+        <div class="text-center small text-secondary">
+          Already have an account? <a href="{% url 'accounts:login' %}" class="fw-semibold">Login</a>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

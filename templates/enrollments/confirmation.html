@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Enrollment Successful! - College Admission System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center my-3">
+  <div class="col-lg-8 col-xl-7">
+    
+    <!-- Enrollment Confirmation Card matching Image 1 #8 EXACTLY -->
+    <div class="card-custom text-center p-4 p-md-5 mb-4">
+      
+      <!-- Big Green Checkmark Icon -->
+      <div class="confirmation-success-icon">
+        <i class="bi bi-check-lg"></i>
+      </div>
+
+      <h2 class="fw-bold text-dark mb-2">Enrollment Successful!</h2>
+      <p class="text-secondary small mb-4">
+        Your admission has been confirmed. You are now enrolled in the selected course.
+      </p>
+
+      <!-- Details Summary Card matching Image 1 #8 -->
+      <div class="p-4 rounded-3 text-start mx-auto mb-4" style="background-color: #F8FAFC; border: 1px solid #E2E8F0; max-width: 520px;">
+        <table class="table table-borderless small mb-0">
+          <tbody>
+            <tr>
+              <td class="text-secondary fw-medium ps-0" style="width: 42%;">Application ID</td>
+              <td class="text-secondary" style="width: 5%;">:</td>
+              <td class="fw-bold text-primary">{{ application.application_id }}</td>
+            </tr>
+            <tr>
+              <td class="text-secondary fw-medium ps-0">Student Name</td>
+              <td class="text-secondary">:</td>
+              <td class="fw-semibold text-dark">{{ application.full_name }}</td>
+            </tr>
+            <tr>
+              <td class="text-secondary fw-medium ps-0">Course</td>
+              <td class="text-secondary">:</td>
+              <td class="fw-bold text-dark">{{ course.course_name }}</td>
+            </tr>
+            <tr>
+              <td class="text-secondary fw-medium ps-0">Department</td>
+              <td class="text-secondary">:</td>
+              <td class="text-secondary">{{ course.department }}</td>
+            </tr>
+            <tr>
+              <td class="text-secondary fw-medium ps-0">Enrollment Date</td>
+              <td class="text-secondary">:</td>
+              <td class="text-secondary">{{ enrollment.enrollment_date|date:"M d, Y" }}</td>
+            </tr>
+            <tr>
+              <td class="text-secondary fw-medium ps-0">Roll Number</td>
+              <td class="text-secondary">:</td>
+              <td class="fw-bold text-dark">{{ enrollment.roll_number }}</td>
+            </tr>
+            <tr>
+              <td class="text-secondary fw-medium ps-0">Status</td>
+              <td class="text-secondary">:</td>
+              <td>
+                <span class="badge-custom badge-approved">Confirmed</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Action Buttons matching Image 1 #8 -->
+      <div class="d-flex flex-wrap justify-content-center gap-3 mb-5">
+        <a href="{% url 'enrollments:enrollment_letter' application.application_id %}" target="_blank" class="btn btn-primary-custom px-4 py-2 fs-6">
+          <i class="bi bi-download"></i> Download Enrollment Letter
+        </a>
+        <a href="{% url 'enrollments:my_enrollments' %}" class="btn btn-outline-custom px-4 py-2 fs-6">
+          <i class="bi bi-book"></i> View My Courses
+        </a>
+      </div>
+
+      <!-- "What's Next?" Section matching Image 1 #8 -->
+      <div class="border-top pt-4 text-start">
+        <h6 class="fw-bold text-dark mb-3">What's Next?</h6>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <div class="p-3 rounded-3 bg-light border text-center h-100">
+              <i class="bi bi-calendar-check fs-3 text-primary mb-2 d-block"></i>
+              <span class="small fw-semibold text-dark d-block">Check your class schedule</span>
+              <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">Timetable released shortly</small>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="p-3 rounded-3 bg-light border text-center h-100">
+              <i class="bi bi-laptop fs-3 text-success mb-2 d-block"></i>
+              <span class="small fw-semibold text-dark d-block">Access learning resources</span>
+              <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">Student library portal</small>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="p-3 rounded-3 bg-light border text-center h-100">
+              <i class="bi bi-person-workspace fs-3 text-info mb-2 d-block"></i>
+              <span class="small fw-semibold text-dark d-block">Contact your academic advisor</span>
+              <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">Department faculty desk</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+{% endblock %}
