@@ -93,10 +93,20 @@ if DATABASE_URL:
         )
     }
 else:
+    # On Vercel serverless, root directory is read-only.
+    # Copy pre-seeded SQLite to /tmp so sessions and logins are fully writable.
+    db_file = BASE_DIR / 'db.sqlite3'
+    if os.environ.get('VERCEL'):
+        import shutil
+        tmp_db = Path('/tmp/db.sqlite3')
+        if not tmp_db.exists() and db_file.exists():
+            shutil.copy2(db_file, tmp_db)
+        db_file = tmp_db
+
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
+            'NAME': db_file,
         }
     }
 
